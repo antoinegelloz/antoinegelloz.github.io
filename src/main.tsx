@@ -2,8 +2,8 @@ import React from 'react'
 import {createRoot} from "react-dom/client";
 import {ChakraProvider} from '@chakra-ui/react'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
-import Root from './routes/root'
-import AdDetails, {loader as adLoader} from "./routes/adDetails";
+import Root from './root'
+import AdDetails, {loader as adLoader} from "./adDetails";
 import {extendTheme} from "@chakra-ui/react"
 
 const theme = extendTheme({
