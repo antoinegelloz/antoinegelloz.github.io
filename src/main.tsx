@@ -1,17 +1,9 @@
 import React from 'react'
 import {createRoot} from "react-dom/client";
 import {ChakraProvider} from '@chakra-ui/react'
-import {
-    createBrowserRouter,
-    createRoutesFromElements,
-    RouterProvider,
-    Route,
-} from "react-router-dom";
-import App from './App'
-import AdDetails, {
-    loader as adLoader,
-} from "./AdDetails";
-import ErrorPage from "./errorPage";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import Root from './routes/root'
+import AdDetails, {loader as adLoader} from "./routes/adDetails";
 import {extendTheme} from "@chakra-ui/react"
 
 const theme = extendTheme({
@@ -27,14 +19,17 @@ const theme = extendTheme({
     }
 })
 
-const router = createBrowserRouter(
-    createRoutesFromElements(
-        <>
-            <Route path="/" element={<App/>} errorElement={<ErrorPage/>}/>
-            <Route path="ads/:adId" element={<AdDetails/>} loader={adLoader} errorElement={<ErrorPage/>}/>
-        </>
-    )
-);
+const router = createBrowserRouter([
+    {
+        path: "/",
+        element: <Root/>,
+    },
+    {
+        path: "ads/:adId",
+        loader: adLoader,
+        element: <AdDetails/>,
+    },
+]);
 
 createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>

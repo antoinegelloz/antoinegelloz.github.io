@@ -1,6 +1,6 @@
 import {Code} from "@chakra-ui/react";
 import {useLoaderData} from "react-router-dom";
-import {Ad, supabaseClient} from "./App";
+import {Ad, supabaseClient} from "./root";
 
 export async function loader(props: any) {
     const {data, error} = await supabaseClient.from("ads")

@@ -64,7 +64,7 @@ export const formatMoney = (amount: number) => new Intl.NumberFormat(
     {style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0},
 ).format(amount);
 
-function App() {
+function Root() {
     const [ads, setAds] = useState<Ad[]>([])
     const [numAds, setNumAds] = useState<number | null>(null)
     const [error, setError] = useState<PostgrestError | null>(null)
@@ -111,8 +111,8 @@ function App() {
                 </Center>
                 {ads.map((ad) => (
                     <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
-                          variant='custom'>
-                        <Box p="5" maxW="360px" borderWidth="1px" key={ad.unique_id}>
+                          variant='custom' key={ad.unique_id}>
+                        <Box p="5" maxW="360px" borderWidth="1px">
                             <Image borderRadius="md" src={ad.raw.images_url[0]} fallback={<Spinner></Spinner>}/>
                             <Text mt={3} fontSize="sm" fontWeight="bold" color="pink.800">
                                 {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"} &bull; {formatMoney(ad.price)}
@@ -141,4 +141,4 @@ function App() {
     )
 }
 
-export default App
+export default Root
