@@ -8,10 +8,12 @@ npm run build
 
 # navigate into the build output directory
 cd dist
-cd -
 
 # place .nojekyll to bypass Jekyll processing
 echo > .nojekyll
+
+cd -
+mv dist docs
 
 # if you are deploying to a custom domain
 # echo 'www.example.com' > CNAME
