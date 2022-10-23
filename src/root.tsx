@@ -12,7 +12,7 @@ import {
     StatLabel,
     StatNumber,
     StatHelpText,
-    Link
+    Link, Button
 } from "@chakra-ui/react";
 
 export type Ad = {
@@ -67,35 +67,57 @@ export const formatMoney = (amount: number) => new Intl.NumberFormat(
 function Root() {
     const [ads, setAds] = useState<Ad[]>([])
     const [numAds, setNumAds] = useState<number | null>(null)
+    const [lastIndex, setLastIndex] = useState<number>(0);
     const [error, setError] = useState<PostgrestError | null>(null)
 
-    const getNumAds = async () => {
+    const fetchNumAds = async () => {
         const {count, error} = await supabaseClient.from("ads")
             .select("*", {count: 'exact', head: true})
             .eq('active', true)
         if (error) {
-            console.log(error)
+            console.log('fetchNumAds error', error)
             setError(error)
             return
         }
+
         setNumAds(count)
     };
 
-    const getAds = async () => {
-        const {data, error} = await supabaseClient.from("ads")
-            .select("*").order("id", {ascending: false})
-            .range(0, 9).eq('active', true)
-        if (error) {
-            console.log(error)
-            setError(error)
-            return
+    const fetchMoreAds = async () => {
+        let pageLen = 5
+        let currIndex = lastIndex;
+        let i = 0;
+        const newAds = ads;
+        while (i < pageLen) {
+            const {data: newAd, error: errAds} = await supabaseClient
+                .from('ads')
+                .select("*").order("id", {ascending: false})
+                .range(currIndex, currIndex)
+                .eq('active', true);
+            if (errAds) {
+                console.log('fetchMoreAds error', errAds);
+                setError(error)
+                return;
+            }
+
+            if (newAd.length != 1) {
+                setLastIndex(currIndex);
+                setAds(newAds);
+                return;
+            } else {
+                newAds.push(newAd[0]);
+                i++;
+            }
+            currIndex += 1;
         }
-        setAds(data)
+
+        setLastIndex(currIndex);
+        setAds(newAds);
     };
 
     useEffect(() => {
-        getNumAds()
-        getAds()
+        fetchNumAds()
+        fetchMoreAds()
     }, []);
 
     return (
@@ -136,6 +158,9 @@ function Root() {
                         </Box>
                     </Link>
                 ))}
+                <Button onClick={() => fetchMoreAds()}>
+                    +
+                </Button>
             </SimpleGrid>
         </Center>
     )
