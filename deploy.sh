@@ -8,9 +8,6 @@ npm run build
 
 cp 404.html dist/
 
-rm -rf docs/
-cp -r dist/ docs/
-
 echo > .nojekyll
 
 git add -A
