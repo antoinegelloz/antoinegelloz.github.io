@@ -5,6 +5,7 @@ import {createBrowserRouter, RouterProvider, useRouteError} from "react-router-d
 import Root from './root'
 import AdDetails, {loader as adLoader} from "./adDetails";
 import {extendTheme} from "@chakra-ui/react"
+import {accordionTheme} from "./components/accordion";
 
 const theme = extendTheme({
     components: {
@@ -15,7 +16,8 @@ const theme = extendTheme({
                     ":visited": {textDecoration: 'none'},
                 },
             }
-        }
+        },
+        Accordion: accordionTheme,
     }
 })
 

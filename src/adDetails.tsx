@@ -93,58 +93,50 @@ function AdDetails() {
                     <ListItem>Score : {ad.score}</ListItem>
                 </UnorderedList>
                 <Address/>
+                <Heading color="darkgrey" mt={5}>Mutations DVF</Heading>
                 {ad.dvf.agg_mutations ?
-                    <>
-                        <Heading color="darkgrey" mt={5}>Mutations DVF</Heading>
-                        <Accordion allowMultiple>
-                            <AccordionItem>
-                                <Flex>
-                                    <Box p='3'>Date</Box>
-                                    <Spacer/>
-                                    <Box p='3'>Distance</Box>
-                                    <Spacer/>
-                                    <Box p='3'>Prix</Box>
-                                    <Spacer/>
-                                    <Box p='3'>Lot</Box>
-                                    <Spacer/>
-                                    <Box p='3'>SRB</Box>
-                                    <Spacer/>
-                                    <Box p='3'><AccordionIcon/></Box>
-                                </Flex>
-                            </AccordionItem>
-                            {ad.dvf.agg_mutations.map((m) => {
-                                let date = Date.parse(m.date_mutation)
-                                let distances = '';
-                                m.distances_m.forEach((d) => {
-                                    if (distances != '') {
-                                        distances += ' ';
-                                    }
-                                    distances += d.toString();
-                                });
+                    <Accordion allowMultiple>
+                        <AccordionItem>
+                            <h2>
+                                <AccordionButton>
+                                    <Box flex='1' textAlign='left'>
+                                        {'Date    Distance   Prix       Lot       SRB'}
+                                    </Box>
+                                    <AccordionIcon/>
+                                </AccordionButton>
+                            </h2>
+                        </AccordionItem>
+                        {ad.dvf.agg_mutations.map((m) => {
+                            let date = Date.parse(m.date_mutation)
+                            let distances = '';
+                            m.distances_m.forEach((d) => {
+                                if (distances != '') {
+                                    distances += ' ';
+                                }
+                                distances += d.toString();
+                            });
 
-                                return <AccordionItem key={uuid()}>
-                                    <Flex>
-                                        <AccordionButton p={0}>
-                                            <Box p='3'>{formatDateShort(date).slice(3)}</Box>
-                                            <Spacer/>
-                                            <Box p='3'>{distances.replace(' ', '/')}m</Box>
-                                            <Spacer/>
-                                            <Box p='3'>{formatMoney(m.valeur_fonciere)}</Box>
-                                            <Spacer/>
-                                            <Box p='3'>{formatMoney(m.price_per_square_lot)}</Box>
-                                            <Spacer/>
-                                            <Box p='3'>{formatMoney(m.price_per_square_srb)}</Box>
-                                            <Spacer/>
-                                            <Box p='3'><AccordionIcon/></Box>
+                            return (
+                                <AccordionItem key={uuid()}>
+                                    <h2>
+                                        <AccordionButton>
+                                            <Box flex='1' textAlign='left'>
+                                                {formatDateShort(date).slice(3) + ' ' +
+                                                    distances.replace(' ', '/').padStart(3) + 'm ' +
+                                                    formatMoney(m.valeur_fonciere).padStart(12) +
+                                                    formatMoney(m.price_per_square_lot).padStart(10) +
+                                                    formatMoney(m.price_per_square_srb).padStart(10)}
+                                            </Box>
+                                            <AccordionIcon/>
                                         </AccordionButton>
-                                    </Flex>
-                                    <AccordionPanel pb={4} fontSize={10}>
-                                        <pre style={{whiteSpace: "pre-wrap"}}>{JSON.stringify(m, null, 1)}</pre>
-                                    </AccordionPanel>
+                                        <AccordionPanel pb={4}>
+                                            {JSON.stringify(m, null, 1)}
+                                        </AccordionPanel>
+                                    </h2>
                                 </AccordionItem>
-                            })}
-                        </Accordion>
-                    </> : <></>
+                            )
+                        })}
+                    </Accordion> : <></>
                 }
             </SimpleGrid>
         </Center>
