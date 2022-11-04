@@ -6,12 +6,11 @@ import {
     AccordionPanel,
     Button,
     Center,
-    Code, Flex,
+    Code,
     Heading,
     Image,
     ListItem,
     SimpleGrid,
-    Spacer,
     Spinner,
     Text,
     UnorderedList
@@ -40,7 +39,7 @@ function AdDetails() {
     let anyAd: any = useLoaderData()
     let adArray: Ad[] = anyAd
     if (adArray.length != 1) {
-        return <Code>Error:{JSON.stringify(adArray, null, 4)}</Code>
+        return <Code>Error: {JSON.stringify(adArray, null, 4)}</Code>
     }
     let ad: Ad = adArray[0]
     console.log(ad, typeof ad)
@@ -69,12 +68,14 @@ function AdDetails() {
                     )
                 })}
                 <br/>
-                {ad.raw.images_url.map((imageURL) => (
-                    <Image key={uuid()} src={imageURL} fallback={<Spinner></Spinner>}></Image>
-                ))}
+                {ad.raw.images_url ?
+                    ad.raw.images_url.map((imageURL) => (
+                        <Image key={uuid()} src={imageURL} fallback={<Spinner></Spinner>}></Image>
+                    )) : <></>
+                }
                 <Heading color="darkgray" mt={5}>Statistiques</Heading>
                 <UnorderedList>
-                    <ListItem>
+                    <ListItem key={uuid()}>
                         <Link
                             href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
                             isExternal={true}
@@ -82,17 +83,17 @@ function AdDetails() {
                             {ad.geojson.features[0].properties.label}
                         </Link>
                     </ListItem>
-                    <ListItem>{formatMoney(ad.price)}</ListItem>
+                    <ListItem key={uuid()}>{formatMoney(ad.price)}</ListItem>
                     {ad.raw.rooms > 1 ?
-                        <ListItem>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
-                        <ListItem>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
+                        <ListItem key={uuid()}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
+                        <ListItem key={uuid()}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
                     }
-                    <ListItem>{formatMoney(ad.price_per_sqm)}/m²</ListItem>
-                    <ListItem>Mise en ligne : {formatDate(Date.parse(ad.inserted_at))}</ListItem>
-                    <ListItem>Statut : {ad.active ? "active" : "inactive"}</ListItem>
-                    <ListItem>Score : {ad.score}</ListItem>
+                    <ListItem key={uuid()}>{formatMoney(ad.price_per_sqm)}/m²</ListItem>
+                    <ListItem key={uuid()}>Mise en ligne : {formatDate(Date.parse(ad.inserted_at))}</ListItem>
+                    <ListItem key={uuid()}>Statut : {ad.active ? "active" : "inactive"}</ListItem>
+                    <ListItem key={uuid()}>Score : {ad.score}</ListItem>
                 </UnorderedList>
-                <Address/>
+                <Address adID={ad.id}/>
                 <Heading color="darkgrey" mt={5}>Mutations DVF</Heading>
                 {ad.dvf.agg_mutations ?
                     <Accordion allowMultiple>

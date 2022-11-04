@@ -143,7 +143,10 @@ function Root() {
                     <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                           variant='custom' key={ad.unique_id}>
                         <Box p="3" maxW="360px" borderWidth="1px">
-                            <Image borderRadius="md" src={ad.raw.images_url[0]} fallback={<Spinner></Spinner>}/>
+                            {ad.raw.images_url ?
+                                <Image borderRadius="md" src={ad.raw.images_url[0]} fallback={<Spinner></Spinner>}/> :
+                                <></>
+                            }
                             <Text mt={3} fontSize="xl" fontWeight="bold" color="pink.800">
                                 {formatMoney(ad.price)} &bull; {formatMoney(ad.price_per_sqm)}/m²
                             </Text>
@@ -157,7 +160,11 @@ function Root() {
                                 <Stat mt={3}>
                                     <StatLabel color="dimgrey">Score</StatLabel>
                                     <StatNumber>{ad.score}</StatNumber>
-                                    <StatHelpText color="dimgrey">{ad.dvf.agg_mutations.length} mutations</StatHelpText>
+                                    {ad.dvf.agg_mutations ?
+                                        <StatHelpText
+                                            color="dimgrey">{ad.dvf.agg_mutations.length} mutations</StatHelpText> :
+                                        <></>
+                                    }
                                 </Stat> : <></>
                             }
                             <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">

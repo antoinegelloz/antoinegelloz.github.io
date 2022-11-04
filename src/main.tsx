@@ -38,8 +38,14 @@ const router = createBrowserRouter([
 function ErrorBoundary() {
     let error = useRouteError();
     console.error(error);
-    // Uncaught ReferenceError: path is not defined
-    return <div>Dang!</div>;
+    // @ts-ignore
+    let msg = error.message
+    return (
+        <>
+            <div>{msg}</div>
+            <div>{JSON.stringify(error, null, 4)}</div>
+        </>
+    )
 }
 
 createRoot(document.getElementById('root') as HTMLElement).render(

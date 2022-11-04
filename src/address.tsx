@@ -1,8 +1,47 @@
 import {useState} from "react";
-import {Heading, Input} from "@chakra-ui/react";
+import {Button, Heading, Input} from "@chakra-ui/react";
 import {GeoJSON} from "./root";
 
-function Address() {
+interface HttpResponse<T> extends Response {
+    parsedBody?: T;
+}
+
+export async function http<T>(request: RequestInfo): Promise<HttpResponse<T>> {
+    const resp: HttpResponse<T> = await fetch(request);
+
+    try {
+        // may error if there is no body
+        resp.parsedBody = await resp.json();
+    } catch (ex) {
+    }
+
+    if (!resp.ok) {
+        throw new Error(resp.statusText);
+    }
+
+    return resp;
+}
+
+export async function get<T>(
+    path: string,
+    args: RequestInit = {method: "get"}
+): Promise<HttpResponse<T>> {
+    return await http<T>(new Request(path, args));
+};
+
+export async function putJSON<T>(
+    path: string,
+    body: any,
+    args: RequestInit = {
+        method: "put",
+        body: JSON.stringify(body),
+        headers: {"Content-Type": "application/json"}
+    }
+): Promise<HttpResponse<T>> {
+    return await http<T>(new Request(path, args));
+};
+
+function Address(props: { adID: number }) {
     const emptyGeoJSON: GeoJSON = {features: []}
     const [preciseAddress, setPreciseAddress] = useState<GeoJSON>(emptyGeoJSON)
     const [message, setMessage] = useState<string>("")
@@ -11,65 +50,51 @@ function Address() {
     const searchAddress = async (address: string) => {
         if (address.length < 5) {
             setPreciseAddress(emptyGeoJSON)
+            setError("")
             return
         }
 
-        fetch('https://api-adresse.data.gouv.fr/search/?q=' + address.replace(/ /g, "+") + '&limit=1')
-            .then(response => {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                return response.body;
-            }).then(readableStream => {
-            if (!readableStream) {
-                return
+        let resp: HttpResponse<GeoJSON>;
+        try {
+            let path = 'https://api-adresse.data.gouv.fr/search/?q=' + address.replace(/ /g, "+") + '&limit=1'
+            resp = await get<GeoJSON>(path)
+            if (resp.parsedBody != undefined && resp.parsedBody.features.length == 1) {
+                setPreciseAddress(resp.parsedBody)
+                setError("")
             }
-
-            const reader = readableStream.getReader();
-            return new ReadableStream({
-                start(controller) {
-                    function push() {
-                        reader.read().then(({done, value}) => {
-                            if (done) {
-                                controller.close()
-                                return
-                            }
-                            controller.enqueue(value)
-                            push()
-                        })
-                    }
-
-                    push()
-                }
-            });
-        }).then(stream => {
-            return new Response(stream, {headers: {"Content-Type": "application/json"}}).json();
-        }).then(featureCollection => {
-            if (!featureCollection ||
-                featureCollection.features == undefined ||
-                featureCollection.features.length == 0) {
-                setPreciseAddress(emptyGeoJSON)
-                return
-            }
-
-            let f: GeoJSON = featureCollection
-            if (f.features[0].properties.type == 'housenumber'
-                && f.features[0].properties.score > 0.8) {
-                setPreciseAddress(f)
-                setError('')
-                setMessage('')
-            } else {
-                setPreciseAddress(emptyGeoJSON)
-            }
-        }).catch(error => {
-            setError("Erreur de recherche d'adresse: " + error);
-        });
+        } catch (err) {
+            console.log("searchAddress error", err);
+            setError('Error: ' + JSON.stringify(err, null, "\t"))
+            setPreciseAddress(emptyGeoJSON)
+        }
     };
+
+    const validateAddress = async () => {
+        if (preciseAddress == emptyGeoJSON) {
+            return
+        }
+        let resp: HttpResponse<string>;
+        try {
+            resp = await putJSON<string>(
+                'https://immo.gelloz.org/api/ads/' + props.adID.toString() + '/geojson',
+                {geojson: preciseAddress})
+            setPreciseAddress(emptyGeoJSON)
+            setError("")
+            if (resp.parsedBody != undefined) {
+                setMessage(resp.parsedBody)
+            }
+        } catch (err) {
+            console.log("validateAddress error", err);
+            setError('Error: ' + JSON.stringify(err, null, "\t"))
+            setPreciseAddress(emptyGeoJSON)
+        }
+    }
 
     return (
         <>
             <Heading color="darkgrey" mt={5}>Modifier l&apos;adresse</Heading>
             <Input onChange={(e) => searchAddress(e.target.value)}></Input>
+            <Button colorScheme='blue' onClick={validateAddress}>OK</Button>
             {preciseAddress.features.length > 0 ?
                 <p>{preciseAddress.features[0].properties.label}</p> :
                 <p>&#8205;</p>
