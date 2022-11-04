@@ -92,6 +92,7 @@ function AdDetails() {
                     <ListItem key={uuid()}>Mise en ligne : {formatDate(Date.parse(ad.inserted_at))}</ListItem>
                     <ListItem key={uuid()}>Statut : {ad.active ? "active" : "inactive"}</ListItem>
                     <ListItem key={uuid()}>Score : {ad.score}</ListItem>
+                    <ListItem key={uuid()}>Mis à jour : {formatDate(Date.parse(ad.updated_at))}</ListItem>
                 </UnorderedList>
                 <Address adID={ad.id}/>
                 <Heading color="darkgrey" mt={5}>Mutations DVF</Heading>

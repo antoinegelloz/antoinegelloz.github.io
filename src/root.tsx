@@ -20,6 +20,7 @@ export type Ad = {
     id: number
     unique_id: number
     inserted_at: string
+    updated_at: string
     area: number
     price: number
     price_per_sqm: number
