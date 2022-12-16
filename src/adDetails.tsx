@@ -16,9 +16,8 @@ import {
     UnorderedList
 } from "@chakra-ui/react";
 import {useLoaderData} from "react-router-dom";
-import {Ad, formatDate, formatDateShort, formatMoney, supabaseClient} from "./root";
+import {Ad, formatDate, formatDateShort, formatDiff, formatMoney, supabaseClient} from "./root";
 import {Link, Box} from "@chakra-ui/react"
-import {uuid} from "@supabase/supabase-js/dist/main/lib/helpers";
 import Address from "./address";
 
 export async function loader(props: any) {
@@ -57,12 +56,12 @@ function AdDetails() {
                     <Heading>{ad.raw.title}</Heading>
                 </Link>
                 <Heading color="darkgray" mt={5}>Description</Heading>
-                {sentences.map((s) => {
+                {sentences.map((s, i) => {
                     if (s.length <= 2) {
                         return <></>
                     }
                     return (
-                        <Text key={uuid()}>
+                        <Text key={i}>
                             {s.charAt(0).toUpperCase() + s.slice(1)}
                         </Text>
                     )
@@ -70,12 +69,12 @@ function AdDetails() {
                 <br/>
                 {ad.raw.images_url ?
                     ad.raw.images_url.map((imageURL) => (
-                        <Image key={uuid()} src={imageURL} fallback={<Spinner></Spinner>}></Image>
+                        <Image key={imageURL} src={imageURL} fallback={<Spinner></Spinner>}></Image>
                     )) : <></>
                 }
                 <Heading color="darkgray" mt={5}>Statistiques</Heading>
                 <UnorderedList>
-                    <ListItem key={uuid()}>
+                    <ListItem key={"link"}>
                         <Link
                             href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
                             isExternal={true}
@@ -83,20 +82,28 @@ function AdDetails() {
                             {ad.geojson.features[0].properties.label}
                         </Link>
                     </ListItem>
-                    <ListItem key={uuid()}>{formatMoney(ad.price)}</ListItem>
+                    <ListItem key={"price"}>{formatMoney(ad.price)}</ListItem>
                     {ad.raw.rooms > 1 ?
-                        <ListItem key={uuid()}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
-                        <ListItem key={uuid()}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
+                        <ListItem key={"rooms"}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
+                        <ListItem key={"rooms"}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
                     }
-                    <ListItem key={uuid()}>{formatMoney(ad.price_per_sqm)}/m²</ListItem>
-                    <ListItem key={uuid()}>Mise en ligne : {formatDate(Date.parse(ad.inserted_at))}</ListItem>
-                    <ListItem key={uuid()}>Statut : {ad.active ? "active" : "inactive"}</ListItem>
-                    <ListItem key={uuid()}>Score : {ad.score}</ListItem>
-                    <ListItem key={uuid()}>Mis à jour : {formatDate(Date.parse(ad.updated_at))}</ListItem>
+                    <ListItem key={"price_sqm"}>{formatMoney(ad.price_sqm)}/m²</ListItem>
+                    <ListItem key={"mel"}>Mise en ligne : {formatDate(Date.parse(ad.inserted_at))}</ListItem>
+                    <ListItem key={"status"}>Statut : {ad.active ? "active" : "inactive"}</ListItem>
+                    <ListItem key={"maj"}>Mis à jour : {formatDate(Date.parse(ad.updated_at))}</ListItem>
                 </UnorderedList>
                 <Address adID={ad.id}/>
                 <Heading color="darkgrey" mt={5}>Mutations DVF</Heading>
-                {ad.dvf.agg_mutations ?
+                <UnorderedList>
+                    <ListItem key={"mean"}>Moyenne de la zone : {formatMoney(ad.dvf.appt_price_sqm)}/m²
+                        ({ad.dvf.appt_qty} ventes)</ListItem>
+                    <ListItem
+                        key={"diff"}>Différence
+                        : {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
+                        ({formatMoney(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
+                    </ListItem>
+                </UnorderedList>
+                {ad.dvf.mutations_agg ?
                     <Accordion allowMultiple>
                         <AccordionItem>
                             <h2>
@@ -108,7 +115,7 @@ function AdDetails() {
                                 </AccordionButton>
                             </h2>
                         </AccordionItem>
-                        {ad.dvf.agg_mutations.map((m) => {
+                        {ad.dvf.mutations_agg.map((m, i) => {
                             let date = Date.parse(m.date_mutation)
                             let distances = '';
                             m.distances_m.forEach((d) => {
@@ -119,15 +126,15 @@ function AdDetails() {
                             });
 
                             return (
-                                <AccordionItem key={uuid()}>
+                                <AccordionItem key={i}>
                                     <h2>
                                         <AccordionButton>
                                             <Box flex='1' textAlign='left'>
                                                 {formatDateShort(date).slice(3) + ' ' +
                                                     distances.replace(' ', '/').padStart(3) + 'm ' +
                                                     formatMoney(m.valeur_fonciere).padStart(12) +
-                                                    formatMoney(m.price_per_square_lot).padStart(10) +
-                                                    formatMoney(m.price_per_square_srb).padStart(10)}
+                                                    formatMoney(m.price_sqm_lot).padStart(10) +
+                                                    formatMoney(m.price_sqm_srb).padStart(10)}
                                             </Box>
                                             <AccordionIcon/>
                                         </AccordionButton>

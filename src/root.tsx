@@ -23,10 +23,9 @@ export type Ad = {
     updated_at: string
     area: number
     price: number
-    price_per_sqm: number
+    price_sqm: number
     geojson: GeoJSON
     dvf: DVF
-    score: number
     active: boolean
     raw: RawAd
 }
@@ -36,17 +35,19 @@ export type GeoJSON = {
 }
 
 type DVF = {
-    agg_mutations: AggMutations[]
+    radius_meter: number
+    appt_qty: number
+    appt_price_sqm: number
+    mutations_agg: AggMutations[]
 }
 
 type AggMutations = {
     id_mutation: string
     date_mutation: string
     valeur_fonciere: number
-    price_per_square_lot: number
-    price_per_square_srb: number
+    price_sqm_lot: number
+    price_sqm_srb: number
     distances_m: number[]
-    sections: string[]
     id_parcelles: string[]
 }
 
@@ -79,13 +80,28 @@ export const formatDate = (date: number) => new Intl.DateTimeFormat(
 
 export const formatDateShort = (date: number) => new Intl.DateTimeFormat(
     'fr-FR',
-    {dateStyle: 'short'},
+    {
+        dateStyle: 'short',
+    },
 ).format(date);
 
 export const formatMoney = (amount: number) => new Intl.NumberFormat(
     'fr-FR',
-    {style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0},
+    {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    },
 ).format(amount);
+
+export const formatDiff = (amount: number) => {
+    if (amount > 0) {
+        return "+" + amount.toFixed(0)
+    } else {
+        return amount.toFixed(0)
+    }
+}
 
 function Root() {
     const [ads, setAds] = useState<Ad[]>([])
@@ -149,7 +165,7 @@ function Root() {
                                 <></>
                             }
                             <Text mt={3} fontSize="xl" fontWeight="bold" color="pink.800">
-                                {formatMoney(ad.price)} &bull; {formatMoney(ad.price_per_sqm)}/m²
+                                {formatMoney(ad.price)} &bull; {formatMoney(ad.price_sqm)}/m²
                             </Text>
                             <Text mt={0} fontSize="xl" fontWeight="bold" color="pink.800">
                                 {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
@@ -157,17 +173,13 @@ function Root() {
                             <Text mt={1} fontSize="md" fontWeight="bold" color="black">
                                 {ad.geojson.features[0].properties.label}
                             </Text>
-                            {ad.score > 0 ?
-                                <Stat mt={3}>
-                                    <StatLabel color="dimgrey">Score</StatLabel>
-                                    <StatNumber>{ad.score}</StatNumber>
-                                    {ad.dvf.agg_mutations ?
-                                        <StatHelpText
-                                            color="dimgrey">{ad.dvf.agg_mutations.length} mutations</StatHelpText> :
-                                        <></>
-                                    }
-                                </Stat> : <></>
-                            }
+                            <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
+                                {formatMoney(ad.dvf.appt_price_sqm)}/m² ({ad.dvf.appt_qty} ventes)
+                            </Text>
+                            <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
+                                {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
+                                ({formatMoney(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
+                            </Text>
                             <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
                                 {formatDate(Date.parse(ad.inserted_at))}
                             </Text>
