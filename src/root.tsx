@@ -8,10 +8,6 @@ import {
     Text,
     SimpleGrid,
     Spinner,
-    Stat,
-    StatLabel,
-    StatNumber,
-    StatHelpText,
     Link,
     Button
 } from "@chakra-ui/react";
@@ -69,8 +65,8 @@ type RawAd = {
     images_url: string[]
 }
 
-const supabaseUrl = "https://mffvjgbvtthawpkfqknk.supabase.co"
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1mZnZqZ2J2dHRoYXdwa2Zxa25rIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjQwNDgxNDEsImV4cCI6MTk3OTYyNDE0MX0.DaP5FawarSaGWrxPzIQ6qqEp7kObOOV8B8IxD_J8Z_Q"
+const supabaseUrl = "https://gwjpvyboxyqqmbmtoysx.supabase.co"
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3anB2eWJveHlxcW1ibXRveXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE4NzAwNTQsImV4cCI6MTk4NzQ0NjA1NH0.aG2bvulNBLI7SuVtutYgz4g22CtnWpL7xBRayApJiaE"
 export const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
 export const formatDate = (date: number) => new Intl.DateTimeFormat(
@@ -110,8 +106,9 @@ function Root() {
     const pageLen = 5
 
     const fetchNumAds = async () => {
-        const {count, error} = await supabaseClient.from("ads")
-            .select("*", {count: 'exact', head: true})
+        const {count, error} = await supabaseClient
+            .from("ads")
+            .select("*", {head: true, count: "exact"})
             .eq('active', true)
         if (error) {
             console.log('fetchNumAds error', error)

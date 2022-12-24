@@ -82,6 +82,8 @@ function Address(props: { adID: number }) {
             setError("")
             if (resp.parsedBody != undefined) {
                 setMessage(resp.parsedBody)
+            } else {
+                setMessage(resp.status.toString() + " " + resp.statusText)
             }
         } catch (err) {
             console.log("validateAddress error", err);
