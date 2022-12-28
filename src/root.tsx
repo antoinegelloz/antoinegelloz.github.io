@@ -70,15 +70,11 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 export const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
 export const formatDate = (date: number) => new Intl.DateTimeFormat(
-    'fr-FR',
-    {dateStyle: 'medium', timeStyle: 'short'},
+    'fr-FR', {dateStyle: 'medium', timeStyle: 'short'},
 ).format(date);
 
 export const formatDateShort = (date: number) => new Intl.DateTimeFormat(
-    'fr-FR',
-    {
-        dateStyle: 'short',
-    },
+    'fr-FR', {dateStyle: 'short'},
 ).format(date);
 
 export const formatMoney = (amount: number) => new Intl.NumberFormat(
@@ -94,29 +90,39 @@ export const formatMoney = (amount: number) => new Intl.NumberFormat(
 export const formatDiff = (amount: number) => {
     if (amount > 0) {
         return "+" + amount.toFixed(0)
-    } else {
-        return amount.toFixed(0)
     }
+
+    return amount.toFixed(0)
 }
 
 function Root() {
     const [ads, setAds] = useState<Ad[]>([])
     const [numAds, setNumAds] = useState<number | null>(null)
-    const [error, setError] = useState<PostgrestError | null>(null)
+    const [error, setError] = useState<PostgrestError | string | null>(null)
+    const [numAdsLoading, setNumAdsLoading] = useState(false)
     const pageLen = 5
 
     const fetchNumAds = async () => {
-        const {count, error} = await supabaseClient
-            .from("ads")
-            .select("*", {head: true, count: "exact"})
-            .eq('active', true)
-        if (error) {
-            console.log('fetchNumAds error', error)
-            setError(error)
-            return
+        try {
+            setNumAdsLoading(true)
+            const {count, error} = await supabaseClient
+                .from("ads")
+                .select("*", {head: true, count: "estimated"})
+                .eq('active', true)
+            if (error) {
+                setError(error)
+                throw error
+            } else {
+                console.log('count', count)
+                setNumAds(count)
+            }
+        } catch (e) {
+            console.log('fetchNumAds error', e)
+            console.log('fetchNumAds error type', typeof e)
+            setError(JSON.stringify(e))
+        } finally {
+            setNumAdsLoading(false)
         }
-
-        setNumAds(count)
     };
 
     const fetchMoreAds = async () => {
@@ -150,9 +156,11 @@ function Root() {
                         <Text fontSize="sm">{JSON.stringify(error, null, 4)}</Text>
                     </Center> : <></>
                 }
-                <Center padding={1}>
-                    <Text fontSize="sm">{numAds} annonces</Text>
-                </Center>
+                {numAdsLoading ? <Spinner></Spinner> :
+                    <Center padding={1}>
+                        <Text fontSize="sm">{numAds} annonces</Text>
+                    </Center>
+                }
                 {ads.map((ad) => (
                     <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                           variant='custom' key={ad.unique_id}>

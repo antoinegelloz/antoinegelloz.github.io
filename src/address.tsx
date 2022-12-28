@@ -79,6 +79,7 @@ function Address(props: { adID: number }) {
                 'https://immo.gelloz.org/api/ads/' + props.adID.toString() + '/geojson',
                 {geojson: preciseAddress})
             setPreciseAddress(emptyGeoJSON)
+
             setError("")
             if (resp.parsedBody != undefined) {
                 setMessage(resp.parsedBody)
