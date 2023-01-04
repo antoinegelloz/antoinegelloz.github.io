@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react'
 import {Link as ReactRouterlink} from "react-router-dom";
-import {createClient, PostgrestError} from '@supabase/supabase-js'
+import {createClient, PostgrestError, Session} from '@supabase/supabase-js'
 import {
     Box,
     Image,
@@ -11,119 +11,20 @@ import {
     Link,
     Button
 } from "@chakra-ui/react";
-
-export type Ad = {
-    id: number
-    unique_id: number
-    inserted_at: string
-    updated_at: string
-    area: number
-    price: number
-    price_sqm: number
-    geojson: GeoJSON
-    dvf: DVF
-    active: boolean
-    raw: RawAd
-}
-
-export type GeoJSON = {
-    features: Feature[]
-}
-
-type DVF = {
-    radius_meter: number
-    appt_qty: number
-    appt_price_sqm: number
-    mutations_agg: AggMutations[]
-}
-
-type AggMutations = {
-    id_mutation: string
-    date_mutation: string
-    valeur_fonciere: number
-    price_sqm_lot: number
-    price_sqm_srb: number
-    distances_m: number[]
-    id_parcelles: string[]
-}
-
-type Feature = {
-    properties: Properties
-}
-
-type Properties = {
-    label: string
-    type: string
-    score: number
-}
-
-type RawAd = {
-    title: string
-    description: string
-    url: string
-    rooms: number
-    images_url: string[]
-}
+import {formatDate, formatDiff, formatMoney} from "./format";
+import {Ad} from "./models";
+import Account from "./account";
+import Auth from "./auth";
 
 const supabaseUrl = "https://gwjpvyboxyqqmbmtoysx.supabase.co"
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3anB2eWJveHlxcW1ibXRveXN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2NzE4NzAwNTQsImV4cCI6MTk4NzQ0NjA1NH0.aG2bvulNBLI7SuVtutYgz4g22CtnWpL7xBRayApJiaE"
 export const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
-export const formatDate = (date: number) => new Intl.DateTimeFormat(
-    'fr-FR', {dateStyle: 'medium', timeStyle: 'short'},
-).format(date);
-
-export const formatDateShort = (date: number) => new Intl.DateTimeFormat(
-    'fr-FR', {dateStyle: 'short'},
-).format(date);
-
-export const formatMoney = (amount: number) => new Intl.NumberFormat(
-    'fr-FR',
-    {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-    },
-).format(amount);
-
-export const formatDiff = (amount: number) => {
-    if (amount > 0) {
-        return "+" + amount.toFixed(0)
-    }
-
-    return amount.toFixed(0)
-}
-
 function Root() {
     const [ads, setAds] = useState<Ad[]>([])
-    const [numAds, setNumAds] = useState<number | null>(null)
     const [error, setError] = useState<PostgrestError | string | null>(null)
-    const [numAdsLoading, setNumAdsLoading] = useState(false)
     const pageLen = 5
-
-    const fetchNumAds = async () => {
-        try {
-            setNumAdsLoading(true)
-            const {count, error} = await supabaseClient
-                .from("ads")
-                .select("*", {head: true, count: "estimated"})
-                .eq('active', true)
-            if (error) {
-                setError(error)
-                throw error
-            } else {
-                console.log('count', count)
-                setNumAds(count)
-            }
-        } catch (e) {
-            console.log('fetchNumAds error', e)
-            console.log('fetchNumAds error type', typeof e)
-            setError(JSON.stringify(e))
-        } finally {
-            setNumAdsLoading(false)
-        }
-    };
+    const [session, setSession] = useState<Session | null>(null)
 
     const fetchMoreAds = async () => {
         const currIndex = ads.length
@@ -143,8 +44,18 @@ function Root() {
     };
 
     useEffect(() => {
-        fetchMoreAds()
-        fetchNumAds()
+        fetchMoreAds().then(r =>
+            console.log('fetchMoreAds done', r)
+        )
+        supabaseClient.auth.getSession().then(
+            ({data: {session}}) => {
+                setSession(session)
+            })
+
+        supabaseClient.auth.onAuthStateChange(
+            (_event, session) => {
+                setSession(session)
+            })
     }, []);
 
     console.log("ads", JSON.parse(JSON.stringify(ads)))
@@ -156,11 +67,7 @@ function Root() {
                         <Text fontSize="sm">{JSON.stringify(error, null, 4)}</Text>
                     </Center> : <></>
                 }
-                {numAdsLoading ? <Spinner></Spinner> :
-                    <Center padding={1}>
-                        <Text fontSize="sm">{numAds} annonces</Text>
-                    </Center>
-                }
+                {!session ? <Auth/> : <Account key={session.user.id} session={session}/>}
                 {ads.map((ad) => (
                     <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                           variant='custom' key={ad.unique_id}>

@@ -3,7 +3,7 @@ import {createRoot} from "react-dom/client";
 import {ChakraProvider} from '@chakra-ui/react'
 import {createBrowserRouter, RouterProvider, useRouteError} from "react-router-dom";
 import Root from './root'
-import AdDetails, {loader as adLoader} from "./adDetails";
+import AdDetails, {loader as adLoader} from "./ad-details";
 import {extendTheme} from "@chakra-ui/react"
 import {accordionTheme} from "./components/accordion";
 

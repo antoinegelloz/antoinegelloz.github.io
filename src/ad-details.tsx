@@ -16,7 +16,9 @@ import {
     UnorderedList
 } from "@chakra-ui/react";
 import {useLoaderData} from "react-router-dom";
-import {Ad, formatDate, formatDateShort, formatDiff, formatMoney, supabaseClient} from "./root";
+import {supabaseClient} from "./root";
+import {Ad} from "./models";
+import {formatDate, formatDateShort, formatDiff, formatMoney} from "./format";
 import {Link, Box} from "@chakra-ui/react"
 import Address from "./address";
 

@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {Button, Heading, Input} from "@chakra-ui/react";
-import {GeoJSON} from "./root";
+import {GeoJSON} from "./models";
 
 interface HttpResponse<T> extends Response {
     parsedBody?: T;

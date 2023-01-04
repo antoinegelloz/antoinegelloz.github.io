@@ -5,7 +5,6 @@ const {definePartsStyle, defineMultiStyleConfig} =
     createMultiStyleConfigHelpers(accordionAnatomy.keys)
 
 const baseStyle = definePartsStyle({
-    // define the part you're going to style
     button: {
         fontFamily: 'monospace',
         fontSize: '9px',
