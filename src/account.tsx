@@ -47,9 +47,9 @@ function Account(props: { session: Session }) {
             setLoading(true)
             const updates = {
                 id: props.session.user.id,
-                minPrice,
-                maxPrice,
-                postcodes,
+                min_price: minPrice,
+                max_price: maxPrice,
+                postcodes: postcodes,
                 updated_at: new Date(),
             }
 
@@ -88,7 +88,8 @@ function Account(props: { session: Session }) {
                     </Button>
                 </form>
             )}
-            <Button mt={2} type="button" onClick={() => supabaseClient.auth.signOut()}>
+            <Button mt={2} type="button"
+                    onClick={() => supabaseClient.auth.signOut()}>
                 Sign Out
             </Button>
         </>

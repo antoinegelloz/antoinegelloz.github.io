@@ -27,6 +27,7 @@ function Root() {
     const [session, setSession] = useState<Session | null>(null)
 
     const fetchMoreAds = async () => {
+        console.log('session', session)
         const currIndex = ads.length
         const currAds = ads
         const {data, error} = await supabaseClient
@@ -44,9 +45,6 @@ function Root() {
     };
 
     useEffect(() => {
-        fetchMoreAds().then(r =>
-            console.log('fetchMoreAds done', r)
-        )
         supabaseClient.auth.getSession().then(
             ({data: {session}}) => {
                 setSession(session)
@@ -56,6 +54,9 @@ function Root() {
             (_event, session) => {
                 setSession(session)
             })
+        fetchMoreAds().then(r =>
+            console.log('fetchMoreAds done', r)
+        )
     }, []);
 
     console.log("ads", JSON.parse(JSON.stringify(ads)))
