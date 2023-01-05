@@ -1,9 +1,9 @@
 import {useState, useEffect} from 'react'
 import {supabaseClient} from './root'
 import {Session} from "@supabase/supabase-js";
-import {Button, NumberInput, NumberInputField, Text} from "@chakra-ui/react";
+import {Button, Input, InputGroup, NumberInput, NumberInputField, Text} from "@chakra-ui/react";
 
-function Account(props: { session: Session }) {
+function Profile(props: { session: Session }) {
     const [loading, setLoading] = useState(true)
     const [minPrice, setMinPrice] = useState<Number>(0)
     const [maxPrice, setMaxPrice] = useState<Number>(0)
@@ -83,6 +83,14 @@ function Account(props: { session: Session }) {
                                  onChange={(s, n) => setMaxPrice(n)}>
                         <NumberInputField/>
                     </NumberInput>
+                    <Text mb='8px'>Localisation</Text>
+                    <Input defaultValue={postcodes.length === 0 ? '75011, 75019' : postcodes.join(', ')}
+                           onChange={
+                               (e) => setPostcodes(e.target.value.split(',')
+                                   .map(s => s.trim()))
+                           }
+                           placeholder='Codes postaux'>
+                    </Input>
                     <Button mt={2} type="submit" disabled={loading}>
                         Update profile
                     </Button>
@@ -96,4 +104,4 @@ function Account(props: { session: Session }) {
     )
 }
 
-export default Account
+export default Profile

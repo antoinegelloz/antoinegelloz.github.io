@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import {formatDate, formatDiff, formatMoney} from "./format";
 import {Ad} from "./models";
-import Account from "./account";
+import Profile from "./profile";
 import Auth from "./auth";
 
 const supabaseUrl = "https://gwjpvyboxyqqmbmtoysx.supabase.co"
@@ -25,23 +25,76 @@ function Root() {
     const [error, setError] = useState<PostgrestError | string | null>(null)
     const pageLen = 5
     const [session, setSession] = useState<Session | null>(null)
+    const [minPrice, setMinPrice] = useState<Number>(0)
+    const [maxPrice, setMaxPrice] = useState<Number>(0)
+    const [postcodes, setPostcodes] = useState<String[]>([])
 
     const fetchMoreAds = async () => {
         console.log('session', session)
         const currIndex = ads.length
         const currAds = ads
+
+        if (session) {
+            let {data: profileData, error: profileError, status} = await supabaseClient
+                .from('profiles')
+                .select(`min_price, max_price, postcodes`)
+                .eq('id', session.user.id)
+                .single()
+
+            if (profileError) {
+                console.log('fetchMoreAds fetch session error', profileError)
+                setError(profileError)
+                return
+            }
+
+            if (!profileData) {
+                console.log('fetchMoreAds empty profile session', session)
+                setError(JSON.stringify(session.user))
+                return
+            }
+
+            if (profileData.min_price < 0) {
+                setMinPrice(0)
+            } else {
+                setMinPrice(profileData.min_price)
+            }
+
+            if (profileData.max_price <= 0) {
+                setMaxPrice(1000000)
+            } else {
+                setMaxPrice(profileData.max_price)
+            }
+
+            const {data, error} = await supabaseClient
+                .from('ads')
+                .select("*").order("id", {ascending: false})
+                .eq('active', true)
+                .gte('price', profileData.min_price)
+                .lte('price', profileData.max_price)
+                .contains('postal_code', profileData.postcodes)
+                .range(currIndex, currIndex + pageLen - 1)
+            if (error) {
+                console.log('fetchMoreAds with session error', error)
+                setError(error)
+                return
+            }
+            let newAds: Ad[] = data
+            setAds([...currAds, ...newAds])
+            return
+        }
+
         const {data, error} = await supabaseClient
             .from('ads')
             .select("*").order("id", {ascending: false})
+            .eq('active', true)
             .range(currIndex, currIndex + pageLen - 1)
-            .eq('active', true);
         if (error) {
-            console.log('fetchMoreAds error', error);
+            console.log('fetchMoreAds error', error)
             setError(error)
             return
         }
         let newAds: Ad[] = data
-        setAds([...currAds, ...newAds]);
+        setAds([...currAds, ...newAds])
     };
 
     useEffect(() => {
@@ -68,13 +121,14 @@ function Root() {
                         <Text fontSize="sm">{JSON.stringify(error, null, 4)}</Text>
                     </Center> : <></>
                 }
-                {!session ? <Auth/> : <Account key={session.user.id} session={session}/>}
+                {!session ? <Auth/> : <Profile key={session.user.id} session={session}/>}
                 {ads.map((ad) => (
                     <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                           variant='custom' key={ad.unique_id}>
-                        <Box p="3" maxW="360px" borderWidth="1px">
+                        <Box p="2" borderWidth="1px">
                             {ad.raw.images_url ?
-                                <Image borderRadius="md" src={ad.raw.images_url[0]} fallback={<Spinner></Spinner>}/> :
+                                <Image borderRadius="md" src={ad.raw.images_url[0]}
+                                       fallback={<Spinner></Spinner>}/> :
                                 <></>
                             }
                             <Text mt={3} fontSize="xl" fontWeight="bold" color="pink.800">
