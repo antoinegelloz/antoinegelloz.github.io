@@ -104,17 +104,41 @@ function Address(props: { adID: number }) {
                 <p>&#8205;</p>
             }
             {error ?
-                <Alert status='error'>
-                    <AlertIcon/>
-                    <AlertTitle>Erreur !</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
+                <Alert
+                    status='error'
+                    variant='subtle'
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    textAlign='center'
+                    height='200px'
+                >
+                    <AlertIcon boxSize='40px' mr={0}/>
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
+                        Erreur !
+                    </AlertTitle>
+                    <AlertDescription maxWidth='sm'>
+                        {error}
+                    </AlertDescription>
                 </Alert> : <></>
             }
             {message ?
-                <Alert status='info'>
-                    <AlertIcon/>
-                    <AlertTitle>En cours</AlertTitle>
-                    <AlertDescription>{message}</AlertDescription>
+                <Alert
+                    status='info'
+                    variant='subtle'
+                    flexDirection='column'
+                    alignItems='center'
+                    justifyContent='center'
+                    textAlign='center'
+                    height='200px'
+                >
+                    <AlertIcon boxSize='40px' mr={0}/>
+                    <AlertTitle mt={4} mb={1} fontSize='lg'>
+                        En cours
+                    </AlertTitle>
+                    <AlertDescription maxWidth='sm'>
+                        {message}
+                    </AlertDescription>
                 </Alert> : <></>
             }
         </>
