@@ -1,15 +1,9 @@
 import {useEffect, useState} from 'react'
 import {Link as ReactRouterlink} from "react-router-dom";
-import {createClient, PostgrestError, Session} from '@supabase/supabase-js'
+import {createClient, Session} from '@supabase/supabase-js'
 import {
-    Box,
-    Image,
-    Center,
-    Text,
-    SimpleGrid,
-    Spinner,
-    Link,
-    Button
+    Box, Image, Center, Text, SimpleGrid, Spinner, Link,
+    Button, Alert, AlertIcon, AlertTitle, AlertDescription
 } from "@chakra-ui/react";
 import {formatDate, formatDiff, formatMoney} from "./format";
 import {Ad} from "./models";
@@ -22,7 +16,7 @@ export const supabaseClient = createClient(supabaseUrl, supabaseKey)
 
 function Root() {
     const [ads, setAds] = useState<Ad[]>([])
-    const [error, setError] = useState<PostgrestError | string | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const pageLen = 5
     const [session, setSession] = useState<Session | null>(null)
     const [minPrice, setMinPrice] = useState<Number>(0)
@@ -30,20 +24,34 @@ function Root() {
     const [postcodes, setPostcodes] = useState<String[]>([])
 
     const fetchMoreAds = async () => {
-        console.log('session', session)
         const currIndex = ads.length
         const currAds = ads
 
+        console.log('session before', session)
+        const {data: sessionData, error: sessionError} = await supabaseClient.auth.getSession()
+        if (sessionError) {
+            console.log('fetchMoreAds getSession error', sessionError)
+            setError('fetchMoreAds getSession: ' + JSON.stringify(sessionError))
+            return
+        }
+        setSession(sessionData.session)
+        console.log('session after', session)
+
         if (session) {
-            let {data: profileData, error: profileError, status} = await supabaseClient
+            let {
+                data: profileData, error: profileError,
+                status: profileStatus, statusText: profileStatusText
+            } = await supabaseClient
                 .from('profiles')
                 .select(`min_price, max_price, postcodes`)
                 .eq('id', session.user.id)
                 .single()
 
             if (profileError) {
-                console.log('fetchMoreAds fetch session error', profileError)
-                setError(profileError)
+                console.log('fetchMoreAds fetch session error', profileError,
+                    'status', profileStatus, 'statusText', profileStatusText)
+                setError(JSON.stringify(profileError) +
+                    " statusCode:" + profileStatus + " status:" + profileStatusText)
                 return
             }
 
@@ -53,6 +61,7 @@ function Root() {
                 return
             }
 
+            console.log('fetchMoreAds profileData', profileData)
             if (profileData.min_price < 0) {
                 setMinPrice(0)
             } else {
@@ -65,17 +74,23 @@ function Root() {
                 setMaxPrice(profileData.max_price)
             }
 
-            const {data, error} = await supabaseClient
+            if (!profileData.postcodes || profileData.postcodes.length === 0) {
+                setPostcodes(['75001'])
+            }
+
+            const {data, error, status, statusText} = await supabaseClient
                 .from('ads')
                 .select("*").order("id", {ascending: false})
                 .eq('active', true)
-                .gte('price', profileData.min_price)
-                .lte('price', profileData.max_price)
-                .contains('postal_code', profileData.postcodes)
+                .gte('price', minPrice)
+                .lte('price', maxPrice)
+                .in('postal_code', postcodes)
                 .range(currIndex, currIndex + pageLen - 1)
             if (error) {
-                console.log('fetchMoreAds with session error', error)
-                setError(error)
+                console.log('fetchMoreAds with session error', error,
+                    'status', status, 'statusText', statusText)
+                setError(JSON.stringify(error) +
+                    " statusCode:" + status + " status:" + statusText)
                 return
             }
             let newAds: Ad[] = data
@@ -83,14 +98,16 @@ function Root() {
             return
         }
 
-        const {data, error} = await supabaseClient
+        const {data, error, status, statusText} = await supabaseClient
             .from('ads')
             .select("*").order("id", {ascending: false})
             .eq('active', true)
             .range(currIndex, currIndex + pageLen - 1)
         if (error) {
-            console.log('fetchMoreAds error', error)
-            setError(error)
+            console.log('fetchMoreAds error', error,
+                'status', status, 'statusText', statusText)
+            setError(JSON.stringify(error) +
+                " statusCode:" + status + " status:" + statusText)
             return
         }
         let newAds: Ad[] = data
@@ -117,9 +134,11 @@ function Root() {
         <Center padding={8}>
             <SimpleGrid columns={1} spacing={3}>
                 {error ?
-                    <Center padding={1}>
-                        <Text fontSize="sm">{JSON.stringify(error, null, 4)}</Text>
-                    </Center> : <></>
+                    <Alert status='error'>
+                        <AlertIcon/>
+                        <AlertTitle>Erreur !</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert> : <></>
                 }
                 {!session ? <Auth/> : <Profile key={session.user.id} session={session}/>}
                 {ads.map((ad) => (

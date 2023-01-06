@@ -3,8 +3,8 @@ import {supabaseClient} from './root'
 import {Button, Input} from "@chakra-ui/react";
 
 export default function Auth() {
-    const [loading, setLoading] = useState(false)
-    const [email, setEmail] = useState('')
+    const [loading, setLoading] = useState<boolean>(false)
+    const [email, setEmail] = useState<string>('')
 
     const handleLogin = async (e: { preventDefault: () => void }) => {
         e.preventDefault()

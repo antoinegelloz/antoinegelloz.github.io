@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Button, Heading, Input} from "@chakra-ui/react";
+import {Alert, AlertDescription, AlertIcon, AlertTitle, Button, Heading, Input} from "@chakra-ui/react";
 import {GeoJSON} from "./models";
 
 interface HttpResponse<T> extends Response {
@@ -22,24 +22,23 @@ export async function http<T>(request: RequestInfo): Promise<HttpResponse<T>> {
     return resp;
 }
 
-export async function get<T>(
-    path: string,
-    args: RequestInit = {method: "get"}
-): Promise<HttpResponse<T>> {
+export async function get<T>(path: string,
+                             args: RequestInit = {
+                                 method: "get"
+                             }): Promise<HttpResponse<T>> {
     return await http<T>(new Request(path, args));
-};
+}
 
-export async function putJSON<T>(
-    path: string,
-    body: any,
-    args: RequestInit = {
-        method: "put",
-        body: JSON.stringify(body),
-        headers: {"Content-Type": "application/json"}
-    }
-): Promise<HttpResponse<T>> {
+export async function putJSON<T>(path: string, body: any,
+                                 args: RequestInit = {
+                                     method: "put",
+                                     body: JSON.stringify(body),
+                                     headers: {
+                                         "Content-Type": "application/json"
+                                     }
+                                 }): Promise<HttpResponse<T>> {
     return await http<T>(new Request(path, args));
-};
+}
 
 function Address(props: { adID: number }) {
     const emptyGeoJSON: GeoJSON = {features: []}
@@ -56,7 +55,8 @@ function Address(props: { adID: number }) {
 
         let resp: HttpResponse<GeoJSON>;
         try {
-            let path = 'https://api-adresse.data.gouv.fr/search/?q=' + address.replace(/ /g, "+") + '&limit=1'
+            let path = 'https://api-adresse.data.gouv.fr/search/?q='
+                + address.replace(/ /g, "+") + '&limit=1'
             resp = await get<GeoJSON>(path)
             if (resp.parsedBody != undefined && resp.parsedBody.features.length == 1) {
                 setPreciseAddress(resp.parsedBody)
@@ -64,7 +64,7 @@ function Address(props: { adID: number }) {
             }
         } catch (err) {
             console.log("searchAddress error", err);
-            setError('Error: ' + JSON.stringify(err, null, "\t"))
+            setError(JSON.stringify(err, null, "\t"))
             setPreciseAddress(emptyGeoJSON)
         }
     };
@@ -73,22 +73,23 @@ function Address(props: { adID: number }) {
         if (preciseAddress == emptyGeoJSON) {
             return
         }
+        setPreciseAddress(emptyGeoJSON)
+        setError("")
         let resp: HttpResponse<string>;
         try {
             resp = await putJSON<string>(
                 'https://immo.gelloz.org/api/ads/' + props.adID.toString() + '/geojson',
                 {geojson: preciseAddress})
-            setPreciseAddress(emptyGeoJSON)
-
-            setError("")
             if (resp.parsedBody != undefined) {
                 setMessage(resp.parsedBody)
+            } else if (resp.status === 200) {
+                setMessage("Nouvelle adresse : " + preciseAddress.features[0].properties.label)
             } else {
                 setMessage(resp.status.toString() + " " + resp.statusText)
             }
         } catch (err) {
             console.log("validateAddress error", err);
-            setError('Error: ' + JSON.stringify(err, null, "\t"))
+            setError(JSON.stringify(err, null, "\t"))
             setPreciseAddress(emptyGeoJSON)
         }
     }
@@ -102,8 +103,20 @@ function Address(props: { adID: number }) {
                 <p>{preciseAddress.features[0].properties.label}</p> :
                 <p>&#8205;</p>
             }
-            {error && <div style={{color: 'red'}}>{error}</div>}
-            {message && <div style={{color: 'lightskyblue'}}>{message}</div>}
+            {error ?
+                <Alert status='error'>
+                    <AlertIcon/>
+                    <AlertTitle>Erreur !</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert> : <></>
+            }
+            {message ?
+                <Alert status='info'>
+                    <AlertIcon/>
+                    <AlertTitle>En cours</AlertTitle>
+                    <AlertDescription>{message}</AlertDescription>
+                </Alert> : <></>
+            }
         </>
     )
 }
