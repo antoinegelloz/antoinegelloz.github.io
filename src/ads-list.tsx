@@ -23,20 +23,20 @@ function AdsList(props: { session: Session | null }) {
     const [maxPrice, setMaxPrice] = useState<Number>(0)
     const [postcodes, setPostcodes] = useState<String[]>([])
 
-    const fetchMoreAds = async (session: Session | null) => {
+    const fetchMoreAds = async () => {
         const currIndex = ads.length
         const currAds = ads
 
-        console.log('fetchMoreAds session', session)
+        console.log('fetchMoreAds session', props.session)
 
-        if (session) {
+        if (props.session) {
             const {
                 data: profileData, error: profileError,
                 status: profileStatus, statusText: profileStatusText
             } = await supabaseClient
                 .from('profiles')
                 .select(`min_price, max_price, postcodes`)
-                .eq('id', session.user.id)
+                .eq('id', props.session.user.id)
                 .single()
 
             if (profileError) {
@@ -48,8 +48,8 @@ function AdsList(props: { session: Session | null }) {
             }
 
             if (!profileData) {
-                console.log('fetchMoreAds empty profile session', session)
-                setError(JSON.stringify(session.user))
+                console.log('fetchMoreAds empty profile session', props.session)
+                setError(JSON.stringify(props.session.user))
                 return
             }
 
@@ -107,10 +107,10 @@ function AdsList(props: { session: Session | null }) {
     };
 
     useEffect(() => {
-        fetchMoreAds(props.session).then(r =>
+        fetchMoreAds().then(r =>
             console.log('fetchMoreAds done', r)
         )
-    }, [props.session]);
+    }, []);
 
     console.log("ads", JSON.parse(JSON.stringify(ads)))
     return (
@@ -165,7 +165,7 @@ function AdsList(props: { session: Session | null }) {
                     </Box>
                 </Link>
             ))}
-            <Button onClick={() => fetchMoreAds(props.session)}>
+            <Button onClick={() => fetchMoreAds()}>
                 +
             </Button>
         </>
