@@ -27,18 +27,10 @@ function Root() {
         const currIndex = ads.length
         const currAds = ads
 
-        console.log('session before', session)
-        const {data: sessionData, error: sessionError} = await supabaseClient.auth.getSession()
-        if (sessionError) {
-            console.log('fetchMoreAds getSession error', sessionError)
-            setError('fetchMoreAds getSession: ' + JSON.stringify(sessionError))
-            return
-        }
-        setSession(sessionData.session)
-        console.log('session after', session)
+        console.log('fetchMoreAds session', session)
 
         if (session) {
-            let {
+            const {
                 data: profileData, error: profileError,
                 status: profileStatus, statusText: profileStatusText
             } = await supabaseClient
@@ -93,7 +85,7 @@ function Root() {
                     " statusCode:" + status + " status:" + statusText)
                 return
             }
-            let newAds: Ad[] = data
+            const newAds: Ad[] = data
             setAds([...currAds, ...newAds])
             return
         }
@@ -110,7 +102,7 @@ function Root() {
                 " statusCode:" + status + " status:" + statusText)
             return
         }
-        let newAds: Ad[] = data
+        const newAds: Ad[] = data
         setAds([...currAds, ...newAds])
     };
 
@@ -118,15 +110,15 @@ function Root() {
         supabaseClient.auth.getSession().then(
             ({data: {session}}) => {
                 setSession(session)
+                fetchMoreAds().then(r =>
+                    console.log('fetchMoreAds done', r)
+                )
             })
 
         supabaseClient.auth.onAuthStateChange(
             (_event, session) => {
                 setSession(session)
             })
-        fetchMoreAds().then(r =>
-            console.log('fetchMoreAds done', r)
-        )
     }, []);
 
     console.log("ads", JSON.parse(JSON.stringify(ads)))

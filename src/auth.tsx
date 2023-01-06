@@ -1,6 +1,15 @@
 import {useState} from 'react'
 import {supabaseClient} from './root'
-import {Button, Input} from "@chakra-ui/react";
+import {
+    Accordion,
+    AccordionButton,
+    AccordionIcon,
+    AccordionItem,
+    AccordionPanel,
+    Box,
+    Button,
+    Input, NumberInput, NumberInputField, Text
+} from "@chakra-ui/react";
 
 export default function Auth() {
     const [loading, setLoading] = useState<boolean>(false)
@@ -13,7 +22,7 @@ export default function Auth() {
             setLoading(true)
             const {error} = await supabaseClient.auth.signInWithOtp({email})
             if (error) throw error
-            alert('Check your email for the login link!')
+            alert('Lien magique envoyé !')
         } catch (error) {
             alert(JSON.stringify(error))
         } finally {
@@ -24,19 +33,33 @@ export default function Auth() {
     return (
         <>
             {loading ? (
-                'Sending magic link...'
+                'Envoi du lien magique...'
             ) : (
-                <form onSubmit={handleLogin}>
-                    <Input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder='Email'
-                        size='sm'
-                    />
-                    <Button mt={2} type='submit'>
-                        Send magic link
-                    </Button>
-                </form>
+                <Accordion allowMultiple>
+                    <AccordionItem>
+                        <h2>
+                            <AccordionButton>
+                                <Box as="span" flex='1' textAlign='left'>
+                                    Se connecter
+                                </Box>
+                                <AccordionIcon/>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <form onSubmit={handleLogin}>
+                                <Input
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder='Email'
+                                    size='sm'
+                                />
+                                <Button mt={2} type='submit'>
+                                    Envoyer un lien magique
+                                </Button>
+                            </form>
+                        </AccordionPanel>
+                    </AccordionItem>
+                </Accordion>
             )}
         </>
     )

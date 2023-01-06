@@ -1,7 +1,16 @@
 import {useState, useEffect} from 'react'
 import {supabaseClient} from './root'
 import {Session} from "@supabase/supabase-js";
-import {Button, Input, NumberInput, NumberInputField, Text} from "@chakra-ui/react";
+import {
+    Accordion,
+    AccordionButton, AccordionIcon,
+    AccordionItem, AccordionPanel, Box,
+    Button,
+    Input,
+    NumberInput,
+    NumberInputField,
+    Text
+} from "@chakra-ui/react";
 
 function Profile(props: { session: Session }) {
     const [loading, setLoading] = useState(true)
@@ -70,37 +79,51 @@ function Profile(props: { session: Session }) {
     return (
         <>
             {loading ? (
-                'Saving...'
+                'Mise à jour...'
             ) : (
-                <form onSubmit={updateProfile}>
-                    <Text mb='8px'>Email: {props.session.user.email}</Text>
-                    <Text mb='8px'>Prix minimum</Text>
-                    <NumberInput mb='8px' defaultValue={minPrice.valueOf()}
-                                 onChange={(s, n) => setMinPrice(n)}>
-                        <NumberInputField/>
-                    </NumberInput>
-                    <Text mb='8px'>Prix maximum</Text>
-                    <NumberInput mb='8px' defaultValue={maxPrice.valueOf()}
-                                 onChange={(s, n) => setMaxPrice(n)}>
-                        <NumberInputField/>
-                    </NumberInput>
-                    <Text mb='8px'>Localisation</Text>
-                    <Input mb='8px' defaultValue={postcodes.length === 0 ? '75011, 75019' : postcodes.join(', ')}
-                           onChange={
-                               (e) => setPostcodes(e.target.value.split(',')
-                                   .map(s => s.trim()))
-                           }
-                           placeholder='Codes postaux'>
-                    </Input>
-                    <Button mt={2} type="submit" disabled={loading}>
-                        Mettre à jour
-                    </Button>
-                </form>
+                <Accordion allowMultiple>
+                    <AccordionItem>
+                        <h2>
+                            <AccordionButton>
+                                <Box as="span" flex='1' textAlign='left'>
+                                    Email: {props.session.user.email}
+                                </Box>
+                                <AccordionIcon/>
+                            </AccordionButton>
+                        </h2>
+                        <AccordionPanel pb={4}>
+                            <form onSubmit={updateProfile}>
+                                <Text mb='8px'>Prix minimum</Text>
+                                <NumberInput mb='8px' defaultValue={minPrice.valueOf()}
+                                             onChange={(s, n) => setMinPrice(n)}>
+                                    <NumberInputField/>
+                                </NumberInput>
+                                <Text mb='8px'>Prix maximum</Text>
+                                <NumberInput mb='8px' defaultValue={maxPrice.valueOf()}
+                                             onChange={(s, n) => setMaxPrice(n)}>
+                                    <NumberInputField/>
+                                </NumberInput>
+                                <Text mb='8px'>Localisation</Text>
+                                <Input mb='8px'
+                                       defaultValue={postcodes.length === 0 ? '75011, 75019' : postcodes.join(', ')}
+                                       onChange={
+                                           (e) => setPostcodes(e.target.value.split(',')
+                                               .map(s => s.trim()))
+                                       }
+                                       placeholder='Codes postaux'>
+                                </Input>
+                                <Button mt={2} type="submit" disabled={loading}>
+                                    Mettre à jour
+                                </Button>
+                            </form>
+                            <Button mt={2} type="button"
+                                    onClick={() => supabaseClient.auth.signOut()}>
+                                Se déconnecter
+                            </Button>
+                        </AccordionPanel>
+                    </AccordionItem>
+                </Accordion>
             )}
-            <Button mt={2} type="button"
-                    onClick={() => supabaseClient.auth.signOut()}>
-                Se déconnecter
-            </Button>
         </>
     )
 }

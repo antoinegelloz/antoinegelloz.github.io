@@ -79,8 +79,8 @@ function AdDetails() {
                     <ListItem key={"link"}>
                         <Link
                             href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
-                            isExternal={true}
-                            variant='custom'>
+                            variant='custom'
+                            isExternal>
                             {ad.geojson.features[0].properties.label}
                         </Link>
                     </ListItem>
@@ -106,7 +106,7 @@ function AdDetails() {
                     </ListItem>
                 </UnorderedList>
                 {ad.dvf.mutations_agg ?
-                    <Accordion allowMultiple>
+                    <Accordion variant='mutations' allowMultiple>
                         <AccordionItem>
                             <h2>
                                 <AccordionButton>

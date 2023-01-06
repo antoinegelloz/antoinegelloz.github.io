@@ -5,7 +5,6 @@ import {createBrowserRouter, RouterProvider, useRouteError} from "react-router-d
 import Root from './root'
 import AdDetails, {loader as adLoader} from "./ad-details";
 import {extendTheme} from "@chakra-ui/react"
-import {accordionTheme} from "./components/accordion";
 
 const theme = extendTheme({
     components: {
@@ -17,7 +16,22 @@ const theme = extendTheme({
                 },
             }
         },
-        Accordion: accordionTheme,
+        Accordion: {
+            variants: {
+                'mutations': {
+                    button: {
+                        fontFamily: 'monospace',
+                        fontSize: '9px',
+                        whiteSpace: 'pre-wrap',
+                    },
+                    panel: {
+                        fontFamily: 'monospace',
+                        fontSize: '9px',
+                        whiteSpace: 'pre-wrap',
+                    }
+                }
+            }
+        },
     }
 })
 
