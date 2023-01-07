@@ -2,14 +2,10 @@ import {useState, useEffect} from 'react'
 import {supabaseClient} from './root'
 import {Session} from "@supabase/supabase-js";
 import {
-    Accordion,
-    AccordionButton, AccordionIcon,
+    Accordion, AccordionButton, AccordionIcon,
     AccordionItem, AccordionPanel, Box,
-    Button,
-    Input, InputGroup, InputLeftAddon,
-    NumberInput,
-    NumberInputField,
-    Text
+    Button, Code, Input, NumberInput,
+    NumberInputField, Text
 } from "@chakra-ui/react";
 
 function Profile(props: { session: Session }) {
@@ -115,13 +111,7 @@ function Profile(props: { session: Session }) {
                                        placeholder='Codes postaux'>
                                 </Input>
                                 <Text mb='8px'>Notifications</Text>
-                                <InputGroup mb='8px'>
-                                    <InputLeftAddon children='ntfy.sh/'/>
-                                    <Input placeholder={props.session.user.id} isDisabled={true} onClick={() => {
-                                        navigator.clipboard.writeText(props.session.user.id).then(r =>
-                                            console.info(`Copied userId ${props.session.user.id} to clipboard`))
-                                    }}/>
-                                </InputGroup>
+                                <Code>ntfy.sh/{props.session.user.id}</Code>
                                 <Button mt={2} type="submit" disabled={loading}>
                                     Mettre à jour
                                 </Button>
