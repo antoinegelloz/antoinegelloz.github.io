@@ -6,7 +6,7 @@ import {formatDate, formatDiff, formatMoney} from "./format";
 import {supabaseClient} from "./root";
 
 const useAdsAsync = (userId: string | undefined) => {
-    const pageLen = 5
+    const pageLen = 20
     const [ads, setAds] = useState<Ad[]>([]);
 
     useEffect(() => {
@@ -58,6 +58,7 @@ const useAdsAsync = (userId: string | undefined) => {
                         .lte('price', maxPrice)
                         .in('postal_code', postcodes)
                         .order("id", {ascending: false})
+                        .limit(pageLen)
                     if (error) {
                         throw new Error(
                             `fetchAds with userId error: ${error} status: ${status} statusText: ${statusText}`)

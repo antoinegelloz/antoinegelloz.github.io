@@ -6,7 +6,7 @@ import {
     AccordionButton, AccordionIcon,
     AccordionItem, AccordionPanel, Box,
     Button,
-    Input,
+    Input, InputGroup, InputLeftAddon,
     NumberInput,
     NumberInputField,
     Text
@@ -105,7 +105,9 @@ function Profile(props: { session: Session }) {
                                 </NumberInput>
                                 <Text mb='8px'>Localisation</Text>
                                 <Input mb='8px'
-                                       defaultValue={postcodes.length === 0 ? '75011, 75019' : postcodes.join(', ')}
+                                       defaultValue={postcodes.length == 0 ?
+                                           '75001, 75002' :
+                                           postcodes.join(', ')}
                                        onChange={
                                            (e) => setPostcodes(e.target.value.split(',')
                                                .map(s => s.trim()))
@@ -116,6 +118,11 @@ function Profile(props: { session: Session }) {
                                     Mettre à jour
                                 </Button>
                             </form>
+                            <Text mb='8px'>Notifications</Text>
+                            <InputGroup size='sm' mb='8px'>
+                                <InputLeftAddon children='ntfy.sh/'/>
+                                <Input placeholder={props.session.user.id} isDisabled={true}/>
+                            </InputGroup>
                             <Button mt={2} type="button"
                                     onClick={() => supabaseClient.auth.signOut()}>
                                 Se déconnecter
