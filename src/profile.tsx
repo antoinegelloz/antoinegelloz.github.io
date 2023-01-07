@@ -114,15 +114,18 @@ function Profile(props: { session: Session }) {
                                        }
                                        placeholder='Codes postaux'>
                                 </Input>
+                                <Text mb='8px'>Notifications</Text>
+                                <InputGroup size='sm' mb='8px'>
+                                    <InputLeftAddon children='ntfy.sh/'/>
+                                    <Input placeholder={props.session.user.id} isDisabled={true} onClick={() => {
+                                        navigator.clipboard.writeText(props.session.user.id).then(r =>
+                                            console.info(`Copied userId ${props.session.user.id} to clipboard`))
+                                    }}/>
+                                </InputGroup>
                                 <Button mt={2} type="submit" disabled={loading}>
                                     Mettre à jour
                                 </Button>
                             </form>
-                            <Text mb='8px'>Notifications</Text>
-                            <InputGroup size='sm' mb='8px'>
-                                <InputLeftAddon children='ntfy.sh/'/>
-                                <Input placeholder={props.session.user.id} isDisabled={true}/>
-                            </InputGroup>
                             <Button mt={2} type="button"
                                     onClick={() => supabaseClient.auth.signOut()}>
                                 Se déconnecter
