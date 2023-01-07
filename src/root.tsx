@@ -1,8 +1,6 @@
 import {useEffect, useState} from 'react'
 import {createClient, Session} from '@supabase/supabase-js'
 import {Center, SimpleGrid} from "@chakra-ui/react";
-import Profile from "./profile";
-import Auth from "./auth";
 import AdsList from "./ads-list";
 
 const supabaseUrl = "https://gwjpvyboxyqqmbmtoysx.supabase.co"
@@ -30,7 +28,6 @@ function Root() {
     return (
         <Center padding={8}>
             <SimpleGrid columns={1} spacing={3}>
-                {!session ? <Auth/> : <Profile key={session.user.id} session={session}/>}
                 <AdsList session={session}/>
             </SimpleGrid>
         </Center>

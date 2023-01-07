@@ -14,6 +14,8 @@ import {
 import {Link as ReactRouterlink} from "react-router-dom";
 import {formatDate, formatDiff, formatMoney} from "./format";
 import {supabaseClient} from "./root";
+import Auth from "./auth";
+import Profile from "./profile";
 
 function AdsList(props: { session: Session | null }) {
     const pageLen = 5
@@ -112,6 +114,10 @@ function AdsList(props: { session: Session | null }) {
         )
     }, []);
 
+    if (error) {
+        alert(error)
+    }
+
     console.log("render ads list", JSON.parse(JSON.stringify(ads)))
     return (
         <>
@@ -134,6 +140,7 @@ function AdsList(props: { session: Session | null }) {
                     </AlertDescription>
                 </Alert> : <></>
             }
+            {!props.session ? <Auth/> : <Profile key={props.session.user.id} session={props.session}/>}
             {ads.map((ad) => (
                 <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                       variant='custom' key={ad.unique_id}>
