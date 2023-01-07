@@ -35,7 +35,7 @@ const useAdsAsync = (userId: string | undefined) => {
                     console.log('fetchAds profileData', profileData)
                     let minPrice: number = 0
                     let maxPrice: number = 1000000
-                    let postcodes: string[] = []
+                    let postcodes: string[] = ['75001']
 
                     if (profileData.min_price > 0) {
                         minPrice = profileData.min_price
@@ -45,8 +45,8 @@ const useAdsAsync = (userId: string | undefined) => {
                         maxPrice = profileData.max_price
                     }
 
-                    if (!profileData.postcodes || profileData.postcodes.length === 0) {
-                        postcodes = ['75001']
+                    if (profileData.postcodes && profileData.postcodes.length > 0) {
+                        postcodes = profileData.postcodes
                     }
 
                     console.log('fetchAds minPrice', minPrice, 'maxPrice', maxPrice, 'postcodes', postcodes)
