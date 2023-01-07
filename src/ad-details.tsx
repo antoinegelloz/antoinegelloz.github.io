@@ -4,23 +4,27 @@ import {
     AccordionIcon,
     AccordionItem,
     AccordionPanel,
-    Button,
+    Button, Card,
+    CardBody,
+    CardHeader,
     Center,
     Code,
     Heading,
     Image,
     ListItem,
     SimpleGrid,
-    Spinner,
+    Spinner, Stack, StackDivider,
     Text,
     UnorderedList
 } from "@chakra-ui/react";
 import {useLoaderData} from "react-router-dom";
 import {supabaseClient} from "./root";
 import {Ad} from "./models";
-import {formatDate, formatDateShort, formatDiff, formatMoney} from "./format";
+import {formatDate, formatDateShort, formatDiff, formatMoney, formatMoneyDiff} from "./format";
 import {Link, Box} from "@chakra-ui/react"
 import Address from "./address";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
 export async function loader(props: any) {
     const {data, error} = await supabaseClient.from("ads")
@@ -47,66 +51,90 @@ function AdDetails() {
 
     const sentences = ad.raw.description.split(/\n|\. /)
 
+    dayjs.extend(relativeTime)
+    dayjs.locale('fr')
     return (
         <Center padding={8}>
             <SimpleGrid columns={1} spacing={3}>
                 <Button onClick={() => close()}>
                     &#x276E; Retour
                 </Button>
-                <Link href={ad.raw.url} isExternal={true}
-                      variant='custom'>
-                    <Heading>{ad.raw.title}</Heading>
-                </Link>
-                <Heading color="darkgray" mt={5}>Description</Heading>
-                {sentences.map((s, i) => {
-                    if (s.length <= 2) {
-                        return <></>
-                    }
-                    return (
-                        <Text key={i}>
-                            {s.charAt(0).toUpperCase() + s.slice(1)}
-                        </Text>
-                    )
-                })}
-                <br/>
-                {ad.raw.images_url ?
-                    ad.raw.images_url.map((imageURL) => (
-                        <Image key={imageURL} src={imageURL} fallback={<Spinner></Spinner>}></Image>
-                    )) : <></>
-                }
-                <Heading color="darkgray" mt={5}>Statistiques</Heading>
-                <UnorderedList>
-                    {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
-                        <ListItem key={"link"}>
-                            <Link
-                                href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
-                                variant='custom'
-                                isExternal>
-                                {ad.geojson.features[0].properties.label}
-                            </Link>
-                        </ListItem> : <></>
-                    }
-                    <ListItem key={"price"}>{formatMoney(ad.price)}</ListItem>
-                    {ad.raw.rooms > 1 ?
-                        <ListItem key={"rooms"}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
-                        <ListItem key={"rooms"}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
-                    }
-                    <ListItem key={"price_sqm"}>{formatMoney(ad.price_sqm)}/m²</ListItem>
-                    <ListItem key={"mel"}>Mise en ligne : {formatDate(Date.parse(ad.inserted_at))}</ListItem>
-                    <ListItem key={"status"}>Statut : {ad.active ? "active" : "inactive"}</ListItem>
-                    <ListItem key={"maj"}>Mis à jour : {formatDate(Date.parse(ad.updated_at))}</ListItem>
-                </UnorderedList>
-                <Address adID={ad.id}/>
-                <Heading color="darkgrey" mt={5}>Mutations DVF</Heading>
-                <UnorderedList>
-                    <ListItem key={"mean"}>Moyenne de la zone : {formatMoney(ad.dvf.appt_price_sqm)}/m²
-                        ({ad.dvf.appt_qty} ventes)</ListItem>
-                    <ListItem
-                        key={"diff"}>Différence
-                        : {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
-                        ({formatMoney(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
-                    </ListItem>
-                </UnorderedList>
+                <Card mb='10px'>
+                    <CardHeader>
+                        <Link href={ad.raw.url} isExternal={true}
+                              variant='custom'>
+                            <Heading>{ad.raw.title}</Heading>
+                        </Link>
+                    </CardHeader>
+                    <CardBody>
+                        <Stack divider={<StackDivider/>} spacing='4'>
+                            <Box>
+                                <Heading size='s' textTransform='uppercase'>
+                                    Description
+                                </Heading>
+                                {sentences.map((s, i) => {
+                                    if (s.length <= 2) {
+                                        return <></>
+                                    }
+                                    return (
+                                        <Text key={i}>
+                                            {s.charAt(0).toUpperCase() + s.slice(1)}
+                                        </Text>
+                                    )
+                                })}
+                            </Box>
+                            <Box>
+                                <Heading size='s' textTransform='uppercase'>
+                                    Statistiques
+                                </Heading>
+                                <UnorderedList>
+                                    {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
+                                        <ListItem key={"link"}>
+                                            <Link
+                                                href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
+                                                variant='custom'
+                                                isExternal>
+                                                {ad.geojson.features[0].properties.label}
+                                            </Link>
+                                        </ListItem> : <></>
+                                    }
+                                    <ListItem key={"price"}>{formatMoney(ad.price)}</ListItem>
+                                    {ad.raw.rooms > 1 ?
+                                        <ListItem key={"rooms"}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
+                                        <ListItem key={"rooms"}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
+                                    }
+                                    <ListItem key={"price_sqm"}>{formatMoney(ad.price_sqm)}/m²</ListItem>
+                                    <ListItem key={"mel"}>Ajoutée {dayjs(ad.inserted_at).fromNow()}</ListItem>
+                                    <ListItem key={"maj"}>Mise à jour {dayjs(ad.updated_at).fromNow()}</ListItem>
+                                    <ListItem key={"status"}>Annonce {ad.active ? "active" : "inactive"}</ListItem>
+                                </UnorderedList>
+                            </Box>
+                            <Stack direction='row' overflowX='auto'>
+                                {ad.raw.images_url.map((imageURL) => (
+                                    <Image boxSize='600px' objectFit='contain' key={imageURL} src={imageURL}
+                                           fallback={<Spinner></Spinner>}></Image>
+                                ))}
+                            </Stack>
+                            <Address adID={ad.id}/>
+                            <Box>
+                                <Heading size='s' textTransform='uppercase'>
+                                    Mutations DVF
+                                </Heading>
+                                <UnorderedList>
+                                    <ListItem key={"mean"}>Moyenne : {formatMoney(ad.dvf.appt_price_sqm)}/m²
+                                        ({ad.dvf.appt_qty} ventes)</ListItem>
+                                    <ListItem
+                                        key={"diff"}>Différence
+                                        : {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
+                                        ({formatMoneyDiff(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
+                                    </ListItem>
+                                </UnorderedList>
+                            </Box>
+                        </Stack>
+                    </CardBody>
+                </Card>
+
+
                 {ad.dvf.mutations_agg ?
                     <Accordion variant='mutations' allowMultiple>
                         <AccordionItem>

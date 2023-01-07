@@ -8,7 +8,7 @@ import {
     AccordionPanel,
     Box,
     Button,
-    Input, NumberInput, NumberInputField, Text
+    Input, InputGroup, InputRightElement, NumberInput, NumberInputField, Text
 } from "@chakra-ui/react";
 
 export default function Auth() {
@@ -47,15 +47,18 @@ export default function Auth() {
                         </h2>
                         <AccordionPanel pb={4}>
                             <form onSubmit={handleLogin}>
-                                <Input
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder='Email'
-                                    size='sm'
-                                />
-                                <Button mt={2} type='submit'>
-                                    Envoyer un lien magique
-                                </Button>
+                                <InputGroup>
+                                    <Input
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder='Email'
+                                    />
+                                    <InputRightElement width='4.5rem'>
+                                        <Button h='1.75rem' size='sm' type='submit'>
+                                            OK
+                                        </Button>
+                                    </InputRightElement>
+                                </InputGroup>
                             </form>
                         </AccordionPanel>
                     </AccordionItem>

@@ -1,6 +1,9 @@
 import React from 'react'
 import {createRoot} from "react-dom/client";
-import {ChakraProvider} from '@chakra-ui/react'
+import {
+    Alert, AlertDescription, AlertIcon,
+    AlertTitle, ChakraProvider, Code
+} from '@chakra-ui/react'
 import {createBrowserRouter, RouterProvider, useRouteError} from "react-router-dom";
 import Root from './root'
 import AdDetails, {loader as adLoader} from "./ad-details";
@@ -52,13 +55,24 @@ const router = createBrowserRouter([
 function ErrorBoundary() {
     let error = useRouteError();
     console.error(error);
-    // @ts-ignore
-    let msg = error.message
     return (
-        <>
-            <div>{msg}</div>
-            <div>{JSON.stringify(error, null, 4)}</div>
-        </>
+        <Alert
+            status='error'
+            variant='subtle'
+            flexDirection='column'
+            alignItems='center'
+            justifyContent='center'
+            textAlign='center'
+            height='200px'
+        >
+            <AlertIcon boxSize='40px' mr={0}/>
+            <AlertTitle mt={4} mb={1} fontSize='lg'>
+                Erreur
+            </AlertTitle>
+            <AlertDescription maxWidth='sm'>
+                <Code>{JSON.stringify(error, null, 2)}</Code>
+            </AlertDescription>
+        </Alert>
     )
 }
 

@@ -1,9 +1,26 @@
 import {useEffect, useState} from "react";
 import {Ad} from "./models";
-import {Box, Image, Link, Spinner, Text} from "@chakra-ui/react";
+import {
+    Box,
+    Card,
+    CardBody,
+    CardFooter,
+    Center,
+    Divider, Flex,
+    Image,
+    Link, Spacer,
+    Spinner,
+    Stack,
+    Text,
+    Wrap,
+    WrapItem
+} from "@chakra-ui/react";
 import {Link as ReactRouterlink} from "react-router-dom";
-import {formatDate, formatDiff, formatMoney} from "./format";
+import {formatDate, formatDiff, formatMoney, formatMoneyDiff} from "./format";
 import {supabaseClient} from "./root";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime"
+import {} from "dayjs/locale/fr";
 
 const useAdsAsync = (userId: string | undefined) => {
     const pageLen = 20
@@ -93,41 +110,81 @@ const useAdsAsync = (userId: string | undefined) => {
 function AdsList(props: { userId: string | undefined }) {
     const ads = useAdsAsync(props.userId)
 
+    dayjs.extend(relativeTime)
+    dayjs.locale('fr')
     console.log("render ads list", JSON.parse(JSON.stringify(ads)))
     return (
         <>
             {ads.map((ad) => (
                 <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                       variant='custom' key={ad.unique_id}>
-                    <Box p="2" borderWidth="1px">
-                        {ad.raw.images_url && ad.raw.images_url.length > 0 ?
-                            <Image borderRadius="md" src={ad.raw.images_url[0]}
-                                   fallback={<Spinner></Spinner>}/> :
-                            <></>
-                        }
-                        <Text mt={3} fontSize="xl" fontWeight="bold" color="pink.800">
-                            {formatMoney(ad.price)} &bull; {formatMoney(ad.price_sqm)}/m²
-                        </Text>
-                        <Text mt={0} fontSize="xl" fontWeight="bold" color="pink.800">
-                            {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
-                        </Text>
-                        {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
-                            <Text mt={1} fontSize="md" fontWeight="bold" color="black">
-                                {ad.geojson.features[0].properties.label}
-                            </Text> : <></>
-                        }
-
-                        <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
-                            {formatMoney(ad.dvf.appt_price_sqm)}/m² ({ad.dvf.appt_qty} ventes)
-                        </Text>
-                        <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
-                            {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
-                            ({formatMoney(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
-                        </Text>
-                        <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
-                            {formatDate(Date.parse(ad.inserted_at))}
-                        </Text>
-                    </Box>
+                    <Card maxW='sm'>
+                        <CardBody>
+                            <Stack direction='row' overflowX='auto'>
+                                {ad.raw.images_url && ad.raw.images_url.map((imageURL) => (
+                                    <Image boxSize='300px' objectFit='cover' key={imageURL} src={imageURL}
+                                           fallback={<Spinner></Spinner>}></Image>
+                                ))}
+                            </Stack>
+                            {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
+                                <Flex mt='20px' mb='10px'>
+                                    <Spacer/>
+                                    <Card maxW='sm'>
+                                        <CardBody pt='10px' pb='10px'>
+                                            <Text fontSize="md" fontWeight="bold">
+                                                {ad.geojson.features[0].properties.label}
+                                            </Text>
+                                        </CardBody>
+                                    </Card>
+                                    <Spacer/>
+                                </Flex> : <></>
+                            }
+                            <Flex mt='10px' mb='10px'>
+                                <Card maxW='sm'>
+                                    <CardBody pt='10px' pb='10px'>
+                                        <Text fontSize="l" fontWeight="bold">
+                                            {formatMoney(ad.price)}
+                                        </Text>
+                                    </CardBody>
+                                </Card>
+                                <Spacer/>
+                                <Card maxW='sm'>
+                                    <CardBody pt='10px' pb='10px'>
+                                        <Text fontSize="l" fontWeight="bold">
+                                            {formatMoney(ad.price_sqm)}/m²
+                                        </Text>
+                                    </CardBody>
+                                </Card>
+                            </Flex>
+                            <Flex mb='0px'>
+                                <Spacer/>
+                                <Card maxW='sm'>
+                                    <CardBody pt='10px' pb='10px'>
+                                        <Text fontSize="l" fontWeight="bold">
+                                            {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
+                                        </Text>
+                                    </CardBody>
+                                </Card>
+                                <Spacer/>
+                            </Flex>
+                        </CardBody>
+                        <Divider/>
+                        <CardFooter>
+                            <Stack direction='column'>
+                                <Text fontSize='12px'>
+                                    Moyenne : {formatMoney(ad.dvf.appt_price_sqm)}/m² ({ad.dvf.appt_qty} ventes)
+                                </Text>
+                                <Text fontSize='12px'>
+                                    Différence
+                                    : {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
+                                    ({formatMoneyDiff(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
+                                </Text>
+                                <Text fontSize='12px'>
+                                    Ajoutée {dayjs(ad.inserted_at).fromNow()}
+                                </Text>
+                            </Stack>
+                        </CardFooter>
+                    </Card>
                 </Link>
             ))}
         </>
