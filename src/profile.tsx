@@ -5,7 +5,7 @@ import {
     Accordion, AccordionButton, AccordionIcon,
     AccordionItem, AccordionPanel, Box,
     Button, Code, Input, NumberInput,
-    NumberInputField, Text
+    NumberInputField, Stack, Text
 } from "@chakra-ui/react";
 
 function Profile(props: { session: Session }) {
@@ -110,8 +110,11 @@ function Profile(props: { session: Session }) {
                                        }
                                        placeholder='Codes postaux'>
                                 </Input>
-                                <Text mb='8px'>Notifications</Text>
-                                <Code>ntfy.sh/{props.session.user.id}</Code>
+                                <Text mb='6px'>Notifications</Text>
+                                <Stack direction='row'>
+                                    <Code children='ntfy/'/>
+                                    <Code colorScheme='blue' children={props.session.user.id}/>
+                                </Stack>
                                 <Button mt={2} type="submit" disabled={loading}>
                                     Mettre à jour
                                 </Button>
