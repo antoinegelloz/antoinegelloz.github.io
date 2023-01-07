@@ -111,8 +111,8 @@ function Profile(props: { session: Session }) {
                                        placeholder='Codes postaux'>
                                 </Input>
                                 <Text mb='6px'>Notifications</Text>
-                                <Stack direction='row'>
-                                    <Code children='ntfy/'/>
+                                <Stack spacing={1} direction='row'>
+                                    <Code children='ntfy.sh/'/>
                                     <Code colorScheme='blue' children={props.session.user.id}/>
                                 </Stack>
                                 <Button mt={2} type="submit" disabled={loading}>
