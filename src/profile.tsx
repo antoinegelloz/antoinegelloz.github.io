@@ -110,16 +110,16 @@ function Profile(props: { session: Session }) {
                                        }
                                        placeholder='Codes postaux'>
                                 </Input>
-                                <Text mb='6px'>Notifications</Text>
-                                <Stack spacing={1} direction='row'>
+                                <Text mb='8px'>Notifications</Text>
+                                <Stack spacing={1} direction='row' mb='8px'>
                                     <Code children='ntfy.sh/'/>
                                     <Code colorScheme='blue' children={props.session.user.id}/>
                                 </Stack>
-                                <Button mt={2} type="submit" disabled={loading}>
+                                <Button mb='8px' type="submit" disabled={loading}>
                                     Mettre à jour
                                 </Button>
                             </form>
-                            <Button mt={2} type="button"
+                            <Button mb='8px' type="button"
                                     onClick={() => supabaseClient.auth.signOut()}>
                                 Se déconnecter
                             </Button>
