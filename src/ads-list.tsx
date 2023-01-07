@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {Ad} from "./models";
-import {Session} from "@supabase/supabase-js";
 import {
     Alert,
     AlertDescription,
@@ -14,10 +13,8 @@ import {
 import {Link as ReactRouterlink} from "react-router-dom";
 import {formatDate, formatDiff, formatMoney} from "./format";
 import {supabaseClient} from "./root";
-import Auth from "./auth";
-import Profile from "./profile";
 
-function AdsList(props: { session: Session | null }) {
+function AdsList(props: { userId: string | undefined }) {
     const pageLen = 5
     const [ads, setAds] = useState<Ad[]>([])
     const [error, setError] = useState<string | null>(null)
@@ -29,16 +26,15 @@ function AdsList(props: { session: Session | null }) {
         const currIndex = ads.length
         const currAds = ads
 
-        console.log('fetchMoreAds session', props.session)
-
-        if (props.session) {
+        console.log('fetchMoreAds userId', props.userId)
+        if (props.userId) {
             const {
                 data: profileData, error: profileError,
                 status: profileStatus, statusText: profileStatusText
             } = await supabaseClient
                 .from('profiles')
                 .select(`min_price, max_price, postcodes`)
-                .eq('id', props.session.user.id)
+                .eq('id', props.userId)
                 .single()
 
             if (profileError) {
@@ -50,8 +46,8 @@ function AdsList(props: { session: Session | null }) {
             }
 
             if (!profileData) {
-                console.log('fetchMoreAds empty profile session', props.session)
-                setError(JSON.stringify(props.session.user))
+                console.log('fetchMoreAds empty profile for userId:', props.userId)
+                setError('empty profile for userId: ' + props.userId)
                 return
             }
 
@@ -81,7 +77,7 @@ function AdsList(props: { session: Session | null }) {
                 .in('postal_code', postcodes)
                 .range(currIndex, currIndex + pageLen - 1)
             if (error) {
-                console.log('fetchMoreAds with session error', error,
+                console.log('fetchMoreAds with userId error', error,
                     'status', status, 'statusText', statusText)
                 setError(JSON.stringify(error) +
                     " statusCode:" + status + " status:" + statusText)
@@ -109,10 +105,12 @@ function AdsList(props: { session: Session | null }) {
     };
 
     useEffect(() => {
+        console.log("ads list useEffect")
+        setAds([])
         fetchMoreAds().then(r =>
-            console.log('fetchMoreAds done', r)
+            console.log('fetchMoreAds useEffect done', r)
         )
-    }, []);
+    }, [props.userId])
 
     if (error) {
         alert(error)
@@ -140,7 +138,6 @@ function AdsList(props: { session: Session | null }) {
                     </AlertDescription>
                 </Alert> : <></>
             }
-            {!props.session ? <Auth/> : <Profile key={props.session.user.id} session={props.session}/>}
             {ads.map((ad) => (
                 <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                       variant='custom' key={ad.unique_id}>
@@ -172,7 +169,9 @@ function AdsList(props: { session: Session | null }) {
                     </Box>
                 </Link>
             ))}
-            <Button onClick={() => fetchMoreAds()}>
+            <Button onClick={() => fetchMoreAds().then(r =>
+                console.log('fetchMoreAds + done', r)
+            )}>
                 +
             </Button>
         </>
