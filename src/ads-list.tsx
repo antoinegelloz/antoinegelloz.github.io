@@ -8,9 +8,9 @@ import {supabaseClient} from "./root";
 const useAdsAsync = (userId: string | undefined) => {
     const pageLen = 5
     const [ads, setAds] = useState<Ad[]>([]);
-    const [minPrice, setMinPrice] = useState<Number>(0);
-    const [maxPrice, setMaxPrice] = useState<Number>(0);
-    const [postcodes, setPostcodes] = useState<String[]>([]);
+    const [minPrice, setMinPrice] = useState<number>(0);
+    const [maxPrice, setMaxPrice] = useState<number>(0);
+    const [postcodes, setPostcodes] = useState<string[]>([]);
 
     useEffect(() => {
         async function fetchAds() {
@@ -52,6 +52,7 @@ const useAdsAsync = (userId: string | undefined) => {
                         setPostcodes(['75001'])
                     }
 
+                    console.log('fetchAds minPrice', minPrice, 'maxPrice', maxPrice, 'postcodes', postcodes)
                     const {data, error, status, statusText} = await supabaseClient
                         .from('ads')
                         .select("*")
