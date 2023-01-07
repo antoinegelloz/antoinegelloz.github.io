@@ -15,16 +15,18 @@ function Root() {
     useEffect(() => {
         supabaseClient.auth.getSession().then(
             ({data: {session}}) => {
+                console.log('useEffect getSession', session)
                 setSession(session)
-                console.log('useEffect session', session)
             })
 
         supabaseClient.auth.onAuthStateChange(
             (_event, session) => {
+                console.log('useEffect onAuthStateChange', session)
                 setSession(session)
             })
     }, []);
 
+    console.log('render root', session)
     return (
         <Center padding={8}>
             <SimpleGrid columns={1} spacing={3}>

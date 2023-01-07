@@ -112,7 +112,7 @@ function AdsList(props: { session: Session | null }) {
         )
     }, []);
 
-    console.log("ads", JSON.parse(JSON.stringify(ads)))
+    console.log("render ads list", JSON.parse(JSON.stringify(ads)))
     return (
         <>
             {error ?
