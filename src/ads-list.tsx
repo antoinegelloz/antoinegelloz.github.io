@@ -99,7 +99,7 @@ function AdsList(props: { userId: string | undefined }) {
                 <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                       variant='custom' key={ad.unique_id}>
                     <Box p="2" borderWidth="1px">
-                        {ad.raw.images_url ?
+                        {ad.raw.images_url && ad.raw.images_url.length > 0 ?
                             <Image borderRadius="md" src={ad.raw.images_url[0]}
                                    fallback={<Spinner></Spinner>}/> :
                             <></>
@@ -110,9 +110,12 @@ function AdsList(props: { userId: string | undefined }) {
                         <Text mt={0} fontSize="xl" fontWeight="bold" color="pink.800">
                             {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
                         </Text>
-                        <Text mt={1} fontSize="md" fontWeight="bold" color="black">
-                            {ad.geojson.features[0].properties.label}
-                        </Text>
+                        {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
+                            <Text mt={1} fontSize="md" fontWeight="bold" color="black">
+                                {ad.geojson.features[0].properties.label}
+                            </Text> : <></>
+                        }
+
                         <Text mt={3} mb={2} fontSize="sm" lineHeight="short" color="dimgrey">
                             {formatMoney(ad.dvf.appt_price_sqm)}/m² ({ad.dvf.appt_qty} ventes)
                         </Text>

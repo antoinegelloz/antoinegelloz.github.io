@@ -76,14 +76,16 @@ function AdDetails() {
                 }
                 <Heading color="darkgray" mt={5}>Statistiques</Heading>
                 <UnorderedList>
-                    <ListItem key={"link"}>
-                        <Link
-                            href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
-                            variant='custom'
-                            isExternal>
-                            {ad.geojson.features[0].properties.label}
-                        </Link>
-                    </ListItem>
+                    {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
+                        <ListItem key={"link"}>
+                            <Link
+                                href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
+                                variant='custom'
+                                isExternal>
+                                {ad.geojson.features[0].properties.label}
+                            </Link>
+                        </ListItem> : <></>
+                    }
                     <ListItem key={"price"}>{formatMoney(ad.price)}</ListItem>
                     {ad.raw.rooms > 1 ?
                         <ListItem key={"rooms"}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
