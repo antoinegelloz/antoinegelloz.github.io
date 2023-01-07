@@ -1,143 +1,102 @@
 import {useEffect, useState} from "react";
 import {Ad} from "./models";
-import {
-    Alert,
-    AlertDescription,
-    AlertIcon,
-    AlertTitle,
-    Box, Button,
-    Image,
-    Link,
-    Spinner, Text
-} from "@chakra-ui/react";
+import {Box, Image, Link, Spinner, Text} from "@chakra-ui/react";
 import {Link as ReactRouterlink} from "react-router-dom";
 import {formatDate, formatDiff, formatMoney} from "./format";
 import {supabaseClient} from "./root";
 
-function AdsList(props: { userId: string | undefined }) {
+const useAdsAsync = (userId: string | undefined) => {
     const pageLen = 5
-    const [ads, setAds] = useState<Ad[]>([])
-    const [error, setError] = useState<string | null>(null)
-    const [minPrice, setMinPrice] = useState<Number>(0)
-    const [maxPrice, setMaxPrice] = useState<Number>(0)
-    const [postcodes, setPostcodes] = useState<String[]>([])
-
-    const fetchMoreAds = async () => {
-        const currIndex = ads.length
-        const currAds = ads
-
-        console.log('fetchMoreAds userId', props.userId)
-        if (props.userId) {
-            const {
-                data: profileData, error: profileError,
-                status: profileStatus, statusText: profileStatusText
-            } = await supabaseClient
-                .from('profiles')
-                .select(`min_price, max_price, postcodes`)
-                .eq('id', props.userId)
-                .single()
-
-            if (profileError) {
-                console.log('fetchMoreAds fetch session error', profileError,
-                    'status', profileStatus, 'statusText', profileStatusText)
-                setError(JSON.stringify(profileError) +
-                    " statusCode:" + profileStatus + " status:" + profileStatusText)
-                return
-            }
-
-            if (!profileData) {
-                console.log('fetchMoreAds empty profile for userId:', props.userId)
-                setError('empty profile for userId: ' + props.userId)
-                return
-            }
-
-            console.log('fetchMoreAds profileData', profileData)
-            if (profileData.min_price < 0) {
-                setMinPrice(0)
-            } else {
-                setMinPrice(profileData.min_price)
-            }
-
-            if (profileData.max_price <= 0) {
-                setMaxPrice(1000000)
-            } else {
-                setMaxPrice(profileData.max_price)
-            }
-
-            if (!profileData.postcodes || profileData.postcodes.length === 0) {
-                setPostcodes(['75001'])
-            }
-
-            const {data, error, status, statusText} = await supabaseClient
-                .from('ads')
-                .select("*").order("id", {ascending: false})
-                .eq('active', true)
-                .gte('price', minPrice)
-                .lte('price', maxPrice)
-                .in('postal_code', postcodes)
-                .range(currIndex, currIndex + pageLen - 1)
-            if (error) {
-                console.log('fetchMoreAds with userId error', error,
-                    'status', status, 'statusText', statusText)
-                setError(JSON.stringify(error) +
-                    " statusCode:" + status + " status:" + statusText)
-                return
-            }
-            const newAds: Ad[] = data
-            setAds([...currAds, ...newAds])
-            return
-        }
-
-        const {data, error, status, statusText} = await supabaseClient
-            .from('ads')
-            .select("*").order("id", {ascending: false})
-            .eq('active', true)
-            .range(currIndex, currIndex + pageLen - 1)
-        if (error) {
-            console.log('fetchMoreAds error', error,
-                'status', status, 'statusText', statusText)
-            setError(JSON.stringify(error) +
-                " statusCode:" + status + " status:" + statusText)
-            return
-        }
-        const newAds: Ad[] = data
-        setAds([...currAds, ...newAds])
-    };
+    const [ads, setAds] = useState<Ad[]>([]);
+    const [minPrice, setMinPrice] = useState<Number>(0);
+    const [maxPrice, setMaxPrice] = useState<Number>(0);
+    const [postcodes, setPostcodes] = useState<String[]>([]);
 
     useEffect(() => {
-        console.log("ads list useEffect")
-        setAds([])
-        fetchMoreAds().then(r =>
-            console.log('fetchMoreAds useEffect done', r)
-        )
-    }, [props.userId])
+        async function fetchAds() {
+            try {
+                console.log('fetchAds userId', userId)
+                if (userId) {
+                    const {
+                        data: profileData, error: profileError,
+                        status: profileStatus, statusText: profileStatusText
+                    } = await supabaseClient
+                        .from('profiles')
+                        .select(`min_price, max_price, postcodes`)
+                        .eq('id', userId)
+                        .single()
+                    if (profileError) {
+                        throw new Error(
+                            `fetchAds fetch session error: profileError ${profileError} status: ${profileStatus} statusText: ${profileStatusText}`)
+                    }
 
-    if (error) {
-        alert(error)
-    }
+                    if (!profileData) {
+                        throw new Error(
+                            `fetchAds empty profile for userId: ${userId}`)
+                    }
+
+                    console.log('fetchAds profileData', profileData)
+                    if (profileData.min_price < 0) {
+                        setMinPrice(0)
+                    } else {
+                        setMinPrice(profileData.min_price)
+                    }
+
+                    if (profileData.max_price <= 0) {
+                        setMaxPrice(1000000)
+                    } else {
+                        setMaxPrice(profileData.max_price)
+                    }
+
+                    if (!profileData.postcodes || profileData.postcodes.length === 0) {
+                        setPostcodes(['75001'])
+                    }
+
+                    const {data, error, status, statusText} = await supabaseClient
+                        .from('ads')
+                        .select("*")
+                        .eq('active', true)
+                        .gte('price', minPrice)
+                        .lte('price', maxPrice)
+                        .in('postal_code', postcodes)
+                        .order("id", {ascending: false})
+                    if (error) {
+                        throw new Error(
+                            `fetchAds with userId error: ${error} status: ${status} statusText: ${statusText}`)
+                    }
+                    setAds(data)
+                    return data
+                }
+
+                const {data, error, status, statusText} = await supabaseClient
+                    .from('ads')
+                    .select("*")
+                    .eq('active', true)
+                    .order("id", {ascending: false})
+                    .limit(pageLen)
+                if (error) {
+                    throw new Error(
+                        `fetchAds error: ${error} status: ${status} statusText: ${statusText}`)
+                }
+                setAds(data)
+                return data
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        fetchAds().then(r => console.info('fetchAds done'))
+    }, [userId]);
+
+    return ads;
+};
+
+function AdsList(props: { userId: string | undefined }) {
+    const ads = useAdsAsync(props.userId)
 
     console.log("render ads list", JSON.parse(JSON.stringify(ads)))
     return (
         <>
-            {error ?
-                <Alert
-                    status='error'
-                    variant='subtle'
-                    flexDirection='column'
-                    alignItems='center'
-                    justifyContent='center'
-                    textAlign='center'
-                    height='200px'
-                >
-                    <AlertIcon boxSize='40px' mr={0}/>
-                    <AlertTitle mt={4} mb={1} fontSize='lg'>
-                        Erreur !
-                    </AlertTitle>
-                    <AlertDescription maxWidth='sm'>
-                        {error}
-                    </AlertDescription>
-                </Alert> : <></>
-            }
             {ads.map((ad) => (
                 <Link as={ReactRouterlink} to={"/ads/" + ad.id.toString()} isExternal={true}
                       variant='custom' key={ad.unique_id}>
@@ -169,11 +128,6 @@ function AdsList(props: { userId: string | undefined }) {
                     </Box>
                 </Link>
             ))}
-            <Button onClick={() => fetchMoreAds().then(r =>
-                console.log('fetchMoreAds + done', r)
-            )}>
-                +
-            </Button>
         </>
     )
 }
