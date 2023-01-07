@@ -8,9 +8,6 @@ import {supabaseClient} from "./root";
 const useAdsAsync = (userId: string | undefined) => {
     const pageLen = 5
     const [ads, setAds] = useState<Ad[]>([]);
-    const [minPrice, setMinPrice] = useState<number>(0);
-    const [maxPrice, setMaxPrice] = useState<number>(0);
-    const [postcodes, setPostcodes] = useState<string[]>([]);
 
     useEffect(() => {
         async function fetchAds() {
@@ -36,20 +33,20 @@ const useAdsAsync = (userId: string | undefined) => {
                     }
 
                     console.log('fetchAds profileData', profileData)
-                    if (profileData.min_price < 0) {
-                        setMinPrice(0)
-                    } else {
-                        setMinPrice(profileData.min_price)
+                    let minPrice: number = 0
+                    let maxPrice: number = 1000000
+                    let postcodes: string[] = []
+
+                    if (profileData.min_price > 0) {
+                        minPrice = profileData.min_price
                     }
 
-                    if (profileData.max_price <= 0) {
-                        setMaxPrice(1000000)
-                    } else {
-                        setMaxPrice(profileData.max_price)
+                    if (profileData.max_price > 0) {
+                        maxPrice = profileData.max_price
                     }
 
                     if (!profileData.postcodes || profileData.postcodes.length === 0) {
-                        setPostcodes(['75001'])
+                        postcodes = ['75001']
                     }
 
                     console.log('fetchAds minPrice', minPrice, 'maxPrice', maxPrice, 'postcodes', postcodes)
@@ -66,7 +63,7 @@ const useAdsAsync = (userId: string | undefined) => {
                             `fetchAds with userId error: ${error} status: ${status} statusText: ${statusText}`)
                     }
                     setAds(data)
-                    return data
+                    return
                 }
 
                 const {data, error, status, statusText} = await supabaseClient
@@ -80,9 +77,9 @@ const useAdsAsync = (userId: string | undefined) => {
                         `fetchAds error: ${error} status: ${status} statusText: ${statusText}`)
                 }
                 setAds(data)
-                return data
+                return
             } catch (err) {
-                console.error(err);
+                console.error(err)
             }
         }
 
