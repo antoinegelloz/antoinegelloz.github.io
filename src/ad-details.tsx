@@ -20,11 +20,12 @@ import {
 import {useLoaderData} from "react-router-dom";
 import {supabaseClient} from "./root";
 import {Ad} from "./models";
-import {formatDate, formatDateShort, formatDiff, formatMoney, formatMoneyDiff} from "./format";
+import {formatDateShort, formatDiff, formatMoney, formatMoneyDiff} from "./format";
 import {Link, Box} from "@chakra-ui/react"
 import Address from "./address";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import {} from "dayjs/locale/fr"
 
 export async function loader(props: any) {
     const {data, error} = await supabaseClient.from("ads")
@@ -52,7 +53,6 @@ function AdDetails() {
     const sentences = ad.raw.description.split(/\n|\. /)
 
     dayjs.extend(relativeTime)
-    dayjs.locale('fr')
     return (
         <Center padding={8}>
             <SimpleGrid columns={1} spacing={3}>
@@ -104,8 +104,10 @@ function AdDetails() {
                                         <ListItem key={"rooms"}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
                                     }
                                     <ListItem key={"price_sqm"}>{formatMoney(ad.price_sqm)}/m²</ListItem>
-                                    <ListItem key={"mel"}>Ajoutée {dayjs(ad.inserted_at).fromNow()}</ListItem>
-                                    <ListItem key={"maj"}>Mise à jour {dayjs(ad.updated_at).fromNow()}</ListItem>
+                                    <ListItem
+                                        key={"mel"}>Ajoutée {dayjs(ad.inserted_at).locale('fr').fromNow()}</ListItem>
+                                    <ListItem key={"maj"}>Mise à
+                                        jour {dayjs(ad.updated_at).locale('fr').fromNow()}</ListItem>
                                     <ListItem key={"status"}>Annonce {ad.active ? "active" : "inactive"}</ListItem>
                                 </UnorderedList>
                             </Box>

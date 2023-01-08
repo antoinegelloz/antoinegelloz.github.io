@@ -4,8 +4,7 @@ import {Session} from "@supabase/supabase-js";
 import {
     Accordion, AccordionButton, AccordionIcon,
     AccordionItem, AccordionPanel, Box,
-    Button, Code, Input, NumberInput,
-    NumberInputField, Stack, Text
+    Button, Code, Input, InputGroup, InputLeftAddon, InputRightAddon, Text
 } from "@chakra-ui/react";
 
 function Profile(props: { session: Session }) {
@@ -81,26 +80,35 @@ function Profile(props: { session: Session }) {
                     <AccordionItem>
                         <h2>
                             <AccordionButton>
-                                <Box as="span" flex='1' textAlign='left'>
-                                    Email: {props.session.user.email}
+                                <Box as="span" flex='1' textAlign='left' fontSize={'11px'}>
+                                    Bienvenue {props.session.user.email}
                                 </Box>
                                 <AccordionIcon/>
                             </AccordionButton>
                         </h2>
                         <AccordionPanel pb={4}>
                             <form onSubmit={updateProfile}>
-                                <Text mb='8px'>Prix minimum</Text>
-                                <NumberInput mb='8px' defaultValue={minPrice.valueOf()}
-                                             onChange={(s, n) => setMinPrice(n)}>
-                                    <NumberInputField/>
-                                </NumberInput>
-                                <Text mb='8px'>Prix maximum</Text>
-                                <NumberInput mb='8px' defaultValue={maxPrice.valueOf()}
-                                             onChange={(s, n) => setMaxPrice(n)}>
-                                    <NumberInputField/>
-                                </NumberInput>
+                                <InputGroup size='sm'>
+                                    <InputLeftAddon children='Minimum'/>
+                                    <Input placeholder='montant'
+                                           type={'number'}
+                                           defaultValue={minPrice.valueOf()}
+                                           onChange={(e) => setMinPrice(Number(e.target.value))}
+                                    />
+                                    <InputRightAddon children='€'/>
+                                </InputGroup>
+                                <InputGroup size='sm'>
+                                    <InputLeftAddon children='Maximum'/>
+                                    <Input placeholder='montant'
+                                           type={'number'}
+                                           defaultValue={maxPrice.valueOf()}
+                                           onChange={(e) => setMaxPrice(Number(e.target.value))}
+                                    />
+                                    <InputRightAddon children='€'/>
+                                </InputGroup>
                                 <Text mb='8px'>Localisation</Text>
                                 <Input mb='8px'
+                                       type={'text'}
                                        defaultValue={postcodes.length == 0 ?
                                            '75001, 75002' :
                                            postcodes.join(', ')}
@@ -111,15 +119,13 @@ function Profile(props: { session: Session }) {
                                        placeholder='Codes postaux'>
                                 </Input>
                                 <Text mb='8px'>Notifications</Text>
-                                <Stack spacing={1} direction='row' mb='8px'>
-                                    <Code children='ntfy.sh/'/>
-                                    <Code colorScheme='blue' children={props.session.user.id}/>
-                                </Stack>
-                                <Button mb='8px' type="submit" disabled={loading}>
+                                <Code children='ntfy.sh/'/>
+                                <Code children={props.session.user.id}/>
+                                <Button mb='10px' type="submit" disabled={loading}>
                                     Mettre à jour
                                 </Button>
                             </form>
-                            <Button mb='8px' type="button"
+                            <Button type="button"
                                     onClick={() => supabaseClient.auth.signOut()}>
                                 Se déconnecter
                             </Button>

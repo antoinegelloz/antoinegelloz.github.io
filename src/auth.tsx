@@ -49,6 +49,7 @@ export default function Auth() {
                             <form onSubmit={handleLogin}>
                                 <InputGroup>
                                     <Input
+                                        type={'email'}
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         placeholder='Email'

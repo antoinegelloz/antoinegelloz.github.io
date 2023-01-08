@@ -1,7 +1,3 @@
-export const formatDate = (date: number) => new Intl.DateTimeFormat(
-    'fr-FR', {dateStyle: 'medium', timeStyle: 'short'},
-).format(date);
-
 export const formatDateShort = (date: number) => new Intl.DateTimeFormat(
     'fr-FR', {dateStyle: 'short'},
 ).format(date);
