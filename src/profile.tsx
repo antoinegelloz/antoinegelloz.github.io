@@ -80,11 +80,13 @@ function Profile(props: { session: Session }) {
                     <AccordionItem>
                         <h2>
                             <AccordionButton>
-                                <Stack direction='row'>
-                                    <Box fontSize={'14px'}>Bienvenue</Box>
-                                    <Tag size={'md'} variant='subtle' colorScheme='cyan'>
-                                        {props.session.user.email}
-                                    </Tag>
+                                <Stack direction='column'>
+                                    <Stack direction='row'>
+                                        <Box fontSize={'14px'}>Bienvenue</Box>
+                                        <Tag size={'md'} variant='subtle' colorScheme='cyan'>
+                                            {props.session.user.email}
+                                        </Tag>
+                                    </Stack>
                                 </Stack>
                                 <AccordionIcon/>
                             </AccordionButton>
