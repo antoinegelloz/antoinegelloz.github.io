@@ -4,7 +4,7 @@ import {Session} from "@supabase/supabase-js";
 import {
     Accordion, AccordionButton, AccordionIcon,
     AccordionItem, AccordionPanel, Box,
-    Button, Code, Input, InputGroup, InputLeftAddon, InputRightAddon, Stack, Text
+    Button, Code, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, Stack, Tag, TagLabel, TagLeftIcon, Text
 } from "@chakra-ui/react";
 
 function Profile(props: { session: Session }) {
@@ -80,9 +80,12 @@ function Profile(props: { session: Session }) {
                     <AccordionItem>
                         <h2>
                             <AccordionButton>
-                                <Box as="span" flex='1' textAlign='left' fontSize={'14px'}>
-                                    Bienvenue {props.session.user.email}
-                                </Box>
+                                <Stack direction='row'>
+                                    <Box fontSize={'14px'}>Bienvenue</Box>
+                                    <Tag size={'md'} variant='subtle' colorScheme='cyan'>
+                                        {props.session.user.email}
+                                    </Tag>
+                                </Stack>
                                 <AccordionIcon/>
                             </AccordionButton>
                         </h2>
@@ -119,7 +122,7 @@ function Profile(props: { session: Session }) {
                                        placeholder='Codes postaux'>
                                 </Input>
                                 <Text mb='8px'>Notifications</Text>
-                                <Stack direction='column' spacing={4} mb={'10px'}>
+                                <Stack direction='column' mb={'10px'}>
                                     <Code children='ntfy.sh/' fontSize={'12px'}/>
                                     <Code children={props.session.user.id} fontSize={'12px'}/>
                                 </Stack>
