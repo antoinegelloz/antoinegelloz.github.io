@@ -113,7 +113,7 @@ function AdDetails() {
                             </Box>
                             <Stack direction='row' overflowX='auto'>
                                 {ad.raw.images_url.map((imageURL) => (
-                                    <Image boxSize='400px' objectFit='contain' key={imageURL} src={imageURL}
+                                    <Image boxSize='300px' objectFit='contain' key={imageURL} src={imageURL}
                                            fallback={<Spinner></Spinner>}></Image>
                                 ))}
                             </Stack>

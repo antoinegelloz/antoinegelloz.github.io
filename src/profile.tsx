@@ -88,7 +88,7 @@ function Profile(props: { session: Session }) {
                         </h2>
                         <AccordionPanel pb={4}>
                             <form onSubmit={updateProfile}>
-                                <InputGroup size='md' mb={'10px'}>
+                                <InputGroup size='md' mt={'10px'} mb={'10px'}>
                                     <InputLeftAddon children='Minimum'/>
                                     <Input placeholder='montant'
                                            type={'number'}
