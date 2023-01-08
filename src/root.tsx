@@ -28,7 +28,7 @@ function Root() {
 
     console.log('render root', session)
     return (
-        <Center padding={8}>
+        <Center padding={6}>
             <SimpleGrid columns={1} spacing={3}>
                 {!session ? <Auth/> : <Profile key={session.user.id} session={session}/>}
                 <AdsList userId={session?.user.id}/>

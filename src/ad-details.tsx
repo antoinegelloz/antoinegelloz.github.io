@@ -54,7 +54,7 @@ function AdDetails() {
 
     dayjs.extend(relativeTime)
     return (
-        <Center padding={8}>
+        <Center padding={6}>
             <SimpleGrid columns={1} spacing={3}>
                 <Button onClick={() => close()}>
                     &#x276E; Retour
@@ -113,7 +113,7 @@ function AdDetails() {
                             </Box>
                             <Stack direction='row' overflowX='auto'>
                                 {ad.raw.images_url.map((imageURL) => (
-                                    <Image boxSize='600px' objectFit='contain' key={imageURL} src={imageURL}
+                                    <Image boxSize='400px' objectFit='contain' key={imageURL} src={imageURL}
                                            fallback={<Spinner></Spinner>}></Image>
                                 ))}
                             </Stack>
