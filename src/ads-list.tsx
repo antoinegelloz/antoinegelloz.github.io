@@ -122,16 +122,17 @@ function AdsList(props: { userId: string | undefined }) {
                                 ))}
                             </Stack>
                             <Flex mb='20px'>
-                                <Tag fontSize={'xl'}>{formatMoney(ad.price)}</Tag>
+                                <Tag fontSize={'18px'}>{formatMoney(ad.price)}</Tag>
                                 <Spacer/>
-                                <Tag fontSize={'xl'}>
+                                <Tag fontSize={'18px'}>
                                     {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
                                 </Tag>
                             </Flex>
                             {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
                                 <Flex>
                                     <Spacer/>
-                                    <Tag fontSize={'xl'}>{ad.geojson.features[0].properties.label}</Tag>
+                                    <Tag fontSize={'18px'}
+                                         textAlign={'center'}>{ad.geojson.features[0].properties.label}</Tag>
                                     <Spacer/>
                                 </Flex> : <></>
                             }

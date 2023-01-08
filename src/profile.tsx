@@ -80,7 +80,7 @@ function Profile(props: { session: Session }) {
                     <AccordionItem>
                         <h2>
                             <AccordionButton>
-                                <Box as="span" flex='1' textAlign='left' fontSize={'13px'}>
+                                <Box as="span" flex='1' textAlign='left' fontSize={'14px'}>
                                     Bienvenue {props.session.user.email}
                                 </Box>
                                 <AccordionIcon/>
@@ -119,8 +119,8 @@ function Profile(props: { session: Session }) {
                                        placeholder='Codes postaux'>
                                 </Input>
                                 <Text mb='8px'>Notifications</Text>
-                                <Code children='ntfy.sh/' fontSize={'sm'}/>
-                                <Code children={props.session.user.id} fontSize={'sm'} mb={'10px'}/>
+                                <Code children='ntfy.sh/' fontSize={'10px'}/>
+                                <Code children={props.session.user.id} fontSize={'10px'} mb={'10px'}/>
                                 <Button mb='10px' type="submit" disabled={loading}>
                                     Mettre à jour
                                 </Button>
