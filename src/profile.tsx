@@ -83,7 +83,7 @@ function Profile(props: { session: Session }) {
                                 <Stack direction='column'>
                                     <Stack direction='row'>
                                         <Tag size={'md'} variant='subtle' colorScheme='white'>Bienvenue</Tag>
-                                        <Tag size={'md'} variant='subtle' colorScheme='cyan'>
+                                        <Tag size='md'>
                                             {props.session.user.email}
                                         </Tag>
                                     </Stack>

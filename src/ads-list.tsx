@@ -6,7 +6,7 @@ import {
     CardFooter,
     Divider, Flex,
     Image,
-    Link, Spacer,
+    Link, Skeleton, Spacer,
     Spinner,
     Stack, Table, TableCaption, TableContainer, Tag, Tbody,
     Td, Tr,
@@ -116,10 +116,10 @@ function AdsList(props: { userId: string | undefined }) {
                     <Card maxW='sm'>
                         <CardBody>
                             <Stack direction='row' overflowX='auto' mb={'20px'}>
-                                {ad.raw.images_url && ad.raw.images_url.map((imageURL) => (
+                                {ad.raw.images_url.length > 0 ? ad.raw.images_url.map((imageURL) => (
                                     <Image boxSize='300px' objectFit='cover' key={imageURL} src={imageURL}
                                            fallback={<Spinner></Spinner>}></Image>
-                                ))}
+                                )) : <Skeleton height="300px" width="300px"/>}
                             </Stack>
                             <Flex mb='20px'>
                                 <Tag fontSize={'18px'}>{formatMoney(ad.price)}</Tag>
