@@ -94,6 +94,7 @@ function Profile(props: { session: Session }) {
                         <AccordionPanel pb={4}>
                             <form onSubmit={updateProfile}>
                                 <InputGroup size='md' mt={'10px'} mb={'10px'}>
+                                    <Text mb='8px'>Prix</Text>
                                     <InputLeftAddon children='Minimum'/>
                                     <Input placeholder='montant'
                                            type={'number'}
@@ -124,7 +125,7 @@ function Profile(props: { session: Session }) {
                                        placeholder='Codes postaux'>
                                 </Input>
                                 <Text mb='8px'>Notifications</Text>
-                                <Stack direction='column' mb={'10px'}>
+                                <Stack direction='column' spacing={0} mb={'10px'}>
                                     <Code children='ntfy.sh/' fontSize={'12px'}/>
                                     <Code children={props.session.user.id} fontSize={'12px'}/>
                                 </Stack>
