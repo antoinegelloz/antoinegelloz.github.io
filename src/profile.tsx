@@ -3,15 +3,45 @@ import {supabaseClient} from './root'
 import {Session} from "@supabase/supabase-js";
 import {
     Accordion, AccordionButton, AccordionIcon,
-    AccordionItem, AccordionPanel, Box,
-    Button, Code, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, Stack, Tag, TagLabel, TagLeftIcon, Text
+    AccordionItem, AccordionPanel,
+    Button, Code, Input, InputGroup,
+    InputLeftAddon, InputRightAddon, Stack, Tag, Text
 } from "@chakra-ui/react";
+import {Config} from "./models";
+import {get, HttpResponse} from "./address";
+
+
+const useConfigAsync = () => {
+    const [config, setConfig] = useState<Config>();
+
+    useEffect(() => {
+        async function fetchConfig() {
+            let resp: HttpResponse<Config>;
+            try {
+                resp = await get<Config>('https://immo.gelloz.org/api/config')
+                if (resp.status != 200 || !resp.parsedBody) {
+                    console.error("getConfig error", resp);
+                    return
+                }
+                setConfig(resp.parsedBody)
+                console.log("getConfig OK", config);
+            } catch (err) {
+                console.error("getConfig error caught", err);
+            }
+        }
+
+        fetchConfig().then(r => console.info('fetchConfig done'))
+    }, []);
+
+    return config;
+};
 
 function Profile(props: { session: Session }) {
     const [loading, setLoading] = useState(true)
     const [minPrice, setMinPrice] = useState<Number>(0)
     const [maxPrice, setMaxPrice] = useState<Number>(0)
     const [postcodes, setPostcodes] = useState<String[]>([])
+    const c = useConfigAsync()
 
     useEffect(() => {
         getProfile().then(r =>
@@ -71,6 +101,7 @@ function Profile(props: { session: Session }) {
         }
     }
 
+    console.log("config", c)
     return (
         <>
             {loading ? (

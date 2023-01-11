@@ -50,3 +50,9 @@ type RawAd = {
     rooms: number
     images_url: string[]
 }
+
+export type Config = {
+    postal_codes: string[]
+    min_price: number
+    max_price: number
+}

@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import {GeoJSON} from "./models";
 
-interface HttpResponse<T> extends Response {
+export interface HttpResponse<T> extends Response {
     parsedBody?: T;
 }
 
@@ -58,6 +58,8 @@ function Address(props: { adID: number }) {
     const [loading, setLoading] = useState<boolean>(false)
 
     const searchAddress = async (address: string) => {
+        setError("")
+        setMessage("")
         if (address.length < 5) {
             setPreciseAddress(emptyGeoJSON)
             setError("")
@@ -74,7 +76,7 @@ function Address(props: { adID: number }) {
                 setError("")
             }
         } catch (err) {
-            console.log("searchAddress error", err);
+            console.error("searchAddress error", err);
             setError(JSON.stringify(err, null, "\t"))
             setPreciseAddress(emptyGeoJSON)
         }
@@ -93,14 +95,14 @@ function Address(props: { adID: number }) {
                 'https://immo.gelloz.org/api/ads/' + props.adID.toString() + '/geojson',
                 {geojson: preciseAddress})
             if (resp.status != 200) {
-                console.log("validateAddress error", resp);
+                console.error("validateAddress error", resp);
                 setError(JSON.stringify(resp, null, "\t"))
                 return
             }
             console.log("validateAddress OK", preciseAddress);
             setMessage("Nouvelle adresse : " + preciseAddress.features[0].properties.label)
         } catch (err) {
-            console.log("validateAddress error caught", err);
+            console.error("validateAddress error caught", err);
             setError(JSON.stringify(err, null, "\t"))
         } finally {
             setLoading(false)
