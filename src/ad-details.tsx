@@ -12,7 +12,7 @@ import {
     Heading,
     Image,
     ListItem,
-    SimpleGrid,
+    SimpleGrid, Skeleton,
     Spinner, Stack, StackDivider,
     Text,
     UnorderedList
@@ -112,10 +112,10 @@ function AdDetails() {
                                 </UnorderedList>
                             </Box>
                             <Stack direction='row' overflowX='auto'>
-                                {ad.raw.images_url.map((imageURL) => (
-                                    <Image boxSize='300px' objectFit='contain' key={imageURL} src={imageURL}
-                                           fallback={<Spinner></Spinner>}></Image>
-                                ))}
+                                {ad.raw.images_url && ad.raw.images_url.length > 0 ? ad.raw.images_url.map((imageURL) => (
+                                    <Image boxSize='350px' objectFit='contain' key={imageURL} src={imageURL}
+                                           fallback={<Skeleton height="350px" width="350px"/>}></Image>
+                                )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
                             <Address adID={ad.id}/>
                             <Box>

@@ -117,21 +117,21 @@ function AdsList(props: { userId: string | undefined }) {
                         <CardBody>
                             <Stack direction='row' overflowX='auto' mb={'20px'}>
                                 {ad.raw.images_url && ad.raw.images_url.length > 0 ? ad.raw.images_url.map((imageURL) => (
-                                    <Image boxSize='300px' objectFit='cover' key={imageURL} src={imageURL}
-                                           fallback={<Spinner></Spinner>}></Image>
-                                )) : <Skeleton height="300px" width="300px"/>}
+                                    <Image boxSize='350px' objectFit='cover' key={imageURL} src={imageURL}
+                                           fallback={<Skeleton height="350px" width="350px"/>}></Image>
+                                )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
                             <Flex mb='20px'>
-                                <Tag fontSize={'18px'}>{formatMoney(ad.price)}</Tag>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'}>{formatMoney(ad.price)}</Tag>
                                 <Spacer/>
-                                <Tag fontSize={'18px'}>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'}>
                                     {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
                                 </Tag>
                             </Flex>
                             {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
                                 <Flex>
                                     <Spacer/>
-                                    <Tag fontSize={'18px'}
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'}
                                          textAlign={'center'}>{ad.geojson.features[0].properties.label}</Tag>
                                     <Spacer/>
                                 </Flex> : <></>
