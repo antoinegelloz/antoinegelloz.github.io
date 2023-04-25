@@ -3,7 +3,7 @@ import {Ad} from "./models";
 import {
     Card, CardBody, CardFooter,
     Divider, Flex, Image,
-    Link, Skeleton, Spacer,
+    Link, ListItem, Skeleton, Spacer,
     Stack, Table, TableCaption, TableContainer, Tag, Tbody,
     Td, Tr,
 } from "@chakra-ui/react";
@@ -15,7 +15,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import {} from "dayjs/locale/fr"
 
 const useAdsAsync = (userId: string | undefined) => {
-    const pageLen = 20
+    const pageLen = 50
     const [ads, setAds] = useState<Ad[]>([]);
 
     useEffect(() => {
@@ -63,6 +63,7 @@ const useAdsAsync = (userId: string | undefined) => {
                         .from('ads')
                         .select("*")
                         .eq('active', true)
+                        .eq('property_type', "Apartment")
                         .gte('price', minPrice)
                         .lte('price', maxPrice)
                         .in('postal_code', postcodes)
@@ -80,6 +81,7 @@ const useAdsAsync = (userId: string | undefined) => {
                     .from('ads')
                     .select("*")
                     .eq('active', true)
+                    .eq('property_type', "Apartment")
                     .order("id", {ascending: false})
                     .limit(pageLen)
                 if (error) {
@@ -118,20 +120,21 @@ function AdsList(props: { userId: string | undefined }) {
                                            fallback={<Skeleton height="350px" width="350px"/>}></Image>
                                 )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
-                            <Flex mb='20px'>
-                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'}>{formatMoney(ad.price)}</Tag>
-                                <Spacer/>
-                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'}>
-                                    {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
-                                </Tag>
-                            </Flex>
+                            <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{formatMoney(ad.price)}</Tag>
+                            {ad.floor > 0 ?
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{ad.floor}ème étage</Tag> :
+                                <></>
+                            }
+                            {ad.floor == 0 ?
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>Rez-de-chaussée</Tag> :
+                                <></>
+                            }
+                            <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
+                            </Tag>
                             {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
-                                <Flex>
-                                    <Spacer/>
-                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'}
-                                         textAlign={'center'}>{ad.geojson.features[0].properties.label}</Tag>
-                                    <Spacer/>
-                                </Flex> : <></>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}
+                                     textAlign={'center'}>{ad.geojson.features[0].properties.label}</Tag> : <></>
                             }
                         </CardBody>
                         <Divider/>
