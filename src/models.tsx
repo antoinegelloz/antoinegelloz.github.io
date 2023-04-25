@@ -6,6 +6,8 @@ export type Ad = {
     area: number
     price: number
     price_sqm: number
+    description: string
+    floor: number
     geojson: GeoJSON
     dvf: DVF
     active: boolean

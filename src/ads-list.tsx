@@ -1,13 +1,9 @@
 import {useEffect, useState} from "react";
 import {Ad} from "./models";
 import {
-    Card,
-    CardBody,
-    CardFooter,
-    Divider, Flex,
-    Image,
+    Card, CardBody, CardFooter,
+    Divider, Flex, Image,
     Link, Skeleton, Spacer,
-    Spinner,
     Stack, Table, TableCaption, TableContainer, Tag, Tbody,
     Td, Tr,
 } from "@chakra-ui/react";
@@ -107,6 +103,7 @@ function AdsList(props: { userId: string | undefined }) {
     const ads = useAdsAsync(props.userId)
 
     dayjs.extend(relativeTime)
+    dayjs.locale('fr')
     console.log("render ads list", JSON.parse(JSON.stringify(ads)))
     return (
         <>
@@ -141,7 +138,7 @@ function AdsList(props: { userId: string | undefined }) {
                         <CardFooter>
                             <TableContainer width={'100%'}>
                                 <Table variant='simple' size={'sm'}>
-                                    <TableCaption>Ajoutée {dayjs(ad.inserted_at).locale('fr').fromNow()}</TableCaption>
+                                    <TableCaption>Ajoutée {dayjs(ad.inserted_at).fromNow()}</TableCaption>
                                     <Tbody>
                                         <Tr>
                                             <Td>Prix</Td>

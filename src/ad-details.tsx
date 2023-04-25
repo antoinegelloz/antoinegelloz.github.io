@@ -50,7 +50,7 @@ function AdDetails() {
     let ad: Ad = adArray[0]
     console.log(ad, typeof ad)
 
-    const sentences = ad.raw.description.split(/\n|\. /)
+    const sentences = ad.description.split(/\n|\. /)
 
     dayjs.extend(relativeTime)
     return (
@@ -104,6 +104,14 @@ function AdDetails() {
                                         <ListItem key={"rooms"}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
                                     }
                                     <ListItem key={"price_sqm"}>{formatMoney(ad.price_sqm)}/m²</ListItem>
+                                    {ad.floor > 0 ?
+                                        <ListItem key={"floor"}>{ad.floor}ème étage</ListItem> :
+                                        <></>
+                                    }
+                                    {ad.floor == 0 ?
+                                        <ListItem key={"floor"}>Rez-de-chaussée</ListItem> :
+                                        <></>
+                                    }
                                     <ListItem
                                         key={"mel"}>Ajoutée {dayjs(ad.inserted_at).locale('fr').fromNow()}</ListItem>
                                     <ListItem key={"maj"}>Mise à
