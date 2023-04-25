@@ -147,18 +147,24 @@ function AdsList(props: { userId: string | undefined }) {
                                             <Td>Prix</Td>
                                             <Td>{formatMoney(ad.price_sqm)}/m²</Td>
                                         </Tr>
-                                        <Tr>
-                                            <Td>Moyenne</Td>
-                                            <Td>{formatMoney(ad.dvf.appt_price_sqm)}/m²</Td>
-                                        </Tr>
-                                        <Tr>
-                                            <Td>Ventes</Td>
-                                            <Td>{ad.dvf.appt_qty}</Td>
-                                        </Tr>
-                                        <Tr>
-                                            <Td>Différence</Td>
-                                            <Td>{formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%</Td>
-                                        </Tr>
+                                        {ad.dvf.appt_price_sqm ?
+                                            <Tr>
+                                                <Td>Moyenne</Td>
+                                                <Td>{formatMoney(ad.dvf.appt_price_sqm)}/m²</Td>
+                                            </Tr> : <></>
+                                        }
+                                        {ad.dvf.appt_qty ?
+                                            <Tr>
+                                                <Td>Ventes</Td>
+                                                <Td>{ad.dvf.appt_qty}</Td>
+                                            </Tr> : <></>
+                                        }
+                                        {ad.dvf.appt_price_sqm ?
+                                            <Tr>
+                                                <Td>Différence</Td>
+                                                <Td>{formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%</Td>
+                                            </Tr> : <></>
+                                        }
                                     </Tbody>
                                 </Table>
                             </TableContainer>

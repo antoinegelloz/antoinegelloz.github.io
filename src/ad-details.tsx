@@ -50,7 +50,7 @@ function AdDetails() {
     let ad: Ad = adArray[0]
     console.log(ad, typeof ad)
 
-    const sentences = ad.description.split(/\n|\. /)
+    const sentences = ad.raw.description.split(/\n|\. /)
 
     dayjs.extend(relativeTime)
     return (
