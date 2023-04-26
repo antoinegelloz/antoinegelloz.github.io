@@ -14,7 +14,7 @@ import {
 import {GeoJSON} from "./models";
 import {get, HttpResponse, putJSON} from "./http";
 
-function Address(props: { adID: number, adAddress: string }) {
+function Address(props: { adID: number }) {
     const emptyGeoJSON: GeoJSON = {features: []}
     const [preciseAddress, setPreciseAddress] = useState<GeoJSON>(emptyGeoJSON)
     const [message, setMessage] = useState<string>("")
@@ -75,15 +75,11 @@ function Address(props: { adID: number, adAddress: string }) {
 
     return (
         <>
-            <Heading size='s' textTransform='uppercase'>
-                Modifier l'adresse
-            </Heading>
             <InputGroup size='md' mt='10px' mb='10px'>
                 <Input
                     pr='4.5rem'
                     type='search'
                     placeholder='Nouvelle adresse'
-                    value={props.adAddress}
                     onChange={(e) => searchAddress(e.target.value)}
                 />
                 <InputRightElement width='4.5rem'>

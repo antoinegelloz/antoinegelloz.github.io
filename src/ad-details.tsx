@@ -13,7 +13,7 @@ import {
     Image,
     ListItem,
     SimpleGrid, Skeleton,
-    Stack, StackDivider,
+    Stack, StackDivider, Tag,
     Text,
     UnorderedList
 } from "@chakra-ui/react";
@@ -69,9 +69,6 @@ function AdDetails() {
                     <CardBody>
                         <Stack divider={<StackDivider/>} spacing='4'>
                             <Box>
-                                <Heading size='s' textTransform='uppercase'>
-                                    Description
-                                </Heading>
                                 {sentences.map((s, i) => {
                                     if (s.length <= 2) {
                                         return <></>
@@ -84,40 +81,58 @@ function AdDetails() {
                                 })}
                             </Box>
                             <Box>
-                                <Heading size='s' textTransform='uppercase'>
-                                    Statistiques
-                                </Heading>
-                                <UnorderedList>
-                                    {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
-                                        <ListItem key={"link"}>
-                                            <Link
-                                                href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
-                                                variant='custom'
-                                                isExternal>
-                                                {ad.geojson.features[0].properties.label}
-                                            </Link>
-                                        </ListItem> : <></>
-                                    }
-                                    <ListItem key={"price"}>{formatMoney(ad.price)}</ListItem>
-                                    {ad.raw.rooms > 1 ?
-                                        <ListItem key={"rooms"}>{ad.raw.rooms} pièces de {ad.area}m²</ListItem> :
-                                        <ListItem key={"rooms"}>{ad.raw.rooms} pièce de {ad.area}m²</ListItem>
-                                    }
-                                    <ListItem key={"price_sqm"}>{formatMoney(ad.price_sqm)}/m²</ListItem>
-                                    {ad.floor > 0 ?
-                                        <ListItem key={"floor"}>{ad.floor}ème étage</ListItem> :
-                                        <></>
-                                    }
-                                    {ad.floor == 0 ?
-                                        <ListItem key={"floor"}>Rez-de-chaussée</ListItem> :
-                                        <></>
-                                    }
-                                    <ListItem
-                                        key={"mel"}>Ajoutée {dayjs(ad.inserted_at).locale('fr').fromNow()}</ListItem>
-                                    <ListItem key={"maj"}>Mise à
-                                        jour {dayjs(ad.updated_at).locale('fr').fromNow()}</ListItem>
-                                    <ListItem key={"status"}>Annonce {ad.active ? "active" : "inactive"}</ListItem>
-                                </UnorderedList>
+                                {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        <Link
+                                            href={encodeURI("https://www.google.com/maps/search/?api=1&query=" + ad.geojson.features[0].properties.label)}
+                                            variant='custom'
+                                            isExternal>
+                                            {ad.geojson.features[0].properties.label}
+                                        </Link>
+                                    </Tag> : <></>
+                                }
+                                {ad.address != "" ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        Suggestion: {ad.address}
+                                    </Tag> : <></>
+                                }
+                                <Address adID={ad.id}/>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
+                                </Tag>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    {formatMoney(ad.price)}
+                                </Tag>
+                                {ad.raw.rooms > 1 ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        {ad.raw.rooms} pièces de {ad.area}m²
+                                    </Tag> :
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        {ad.raw.rooms} pièce de {ad.area}m²
+                                    </Tag>
+                                }
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    {formatMoney(ad.price_sqm)}/m²
+                                </Tag>
+                                {ad.floor > 0 ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        {ad.floor}ème étage
+                                    </Tag> : <></>
+                                }
+                                {ad.floor == 0 ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        Rez-de-chaussée
+                                    </Tag> : <></>
+                                }
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    Ajoutée {dayjs(ad.inserted_at).locale('fr').fromNow()}
+                                </Tag>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    Mise à jour {dayjs(ad.updated_at).locale('fr').fromNow()}
+                                </Tag>
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    Annonce {ad.active ? "active" : "inactive"}
+                                </Tag>
                             </Box>
                             <Stack direction='row' overflowX='auto'>
                                 {ad.raw.images_url && ad.raw.images_url.length > 0 ? ad.raw.images_url.map((imageURL) => (
@@ -125,20 +140,22 @@ function AdDetails() {
                                            fallback={<Skeleton height="350px" width="350px"/>}></Image>
                                 )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
-                            <Address adID={ad.id} adAddress={ad.address}/>
                             <Box>
-                                <Heading size='s' textTransform='uppercase'>
-                                    Mutations DVF
+                                <Heading size='md' textTransform='uppercase' mb={'10px'}>
+                                    DVF
                                 </Heading>
-                                <UnorderedList>
-                                    <ListItem key={"mean"}>Moyenne : {formatMoney(ad.dvf.appt_price_sqm)}/m²
-                                        ({ad.dvf.appt_qty} ventes)</ListItem>
-                                    <ListItem
-                                        key={"diff"}>Différence
+                                {ad.dvf.appt_price_sqm > 0 ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        Moyenne : {formatMoney(ad.dvf.appt_price_sqm)}/m² ({ad.dvf.appt_qty} ventes)
+                                    </Tag> : <></>
+                                }
+                                {ad.dvf.appt_price_sqm > 0 ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        Différence
                                         : {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
                                         ({formatMoneyDiff(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
-                                    </ListItem>
-                                </UnorderedList>
+                                    </Tag> : <></>
+                                }
                             </Box>
                         </Stack>
                     </CardBody>

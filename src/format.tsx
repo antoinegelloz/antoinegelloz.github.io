@@ -22,7 +22,7 @@ export const formatMoneyDiff = (amount: number) => {
             maximumFractionDigits: 0,
         },
     )
-    if (amount > 0) {
+    if (amount > 1) {
         return '+' + f.format(amount)
     }
 
@@ -30,7 +30,7 @@ export const formatMoneyDiff = (amount: number) => {
 }
 
 export const formatDiff = (amount: number) => {
-    if (amount > 0) {
+    if (amount > 1) {
         return "+" + amount.toFixed(0)
     }
 
