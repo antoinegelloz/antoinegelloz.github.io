@@ -8,49 +8,13 @@ import {
     Heading,
     Input,
     InputGroup,
-    InputRightElement, Spinner
+    InputRightElement,
+    Spinner
 } from "@chakra-ui/react";
 import {GeoJSON} from "./models";
+import {get, HttpResponse, putJSON} from "./http";
 
-export interface HttpResponse<T> extends Response {
-    parsedBody?: T;
-}
-
-export async function http<T>(request: RequestInfo): Promise<HttpResponse<T>> {
-    const resp: HttpResponse<T> = await fetch(request);
-
-    try {
-        // may error if there is no body
-        resp.parsedBody = await resp.json();
-    } catch (ex) {
-    }
-
-    if (!resp.ok) {
-        throw new Error(resp.statusText);
-    }
-
-    return resp;
-}
-
-export async function get<T>(path: string,
-                             args: RequestInit = {
-                                 method: "get"
-                             }): Promise<HttpResponse<T>> {
-    return await http<T>(new Request(path, args));
-}
-
-export async function putJSON<T>(path: string, body: any,
-                                 args: RequestInit = {
-                                     method: "put",
-                                     body: JSON.stringify(body),
-                                     headers: {
-                                         "Content-Type": "application/json"
-                                     }
-                                 }): Promise<HttpResponse<T>> {
-    return await http<T>(new Request(path, args));
-}
-
-function Address(props: { adID: number }) {
+function Address(props: { adID: number, adAddress: string }) {
     const emptyGeoJSON: GeoJSON = {features: []}
     const [preciseAddress, setPreciseAddress] = useState<GeoJSON>(emptyGeoJSON)
     const [message, setMessage] = useState<string>("")
@@ -117,8 +81,9 @@ function Address(props: { adID: number }) {
             <InputGroup size='md' mt='10px' mb='10px'>
                 <Input
                     pr='4.5rem'
-                    type='text'
+                    type='search'
                     placeholder='Nouvelle adresse'
+                    value={props.adAddress}
                     onChange={(e) => searchAddress(e.target.value)}
                 />
                 <InputRightElement width='4.5rem'>

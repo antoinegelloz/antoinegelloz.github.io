@@ -13,7 +13,7 @@ import {
     Image,
     ListItem,
     SimpleGrid, Skeleton,
-    Spinner, Stack, StackDivider,
+    Stack, StackDivider,
     Text,
     UnorderedList
 } from "@chakra-ui/react";
@@ -125,7 +125,7 @@ function AdDetails() {
                                            fallback={<Skeleton height="350px" width="350px"/>}></Image>
                                 )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
-                            <Address adID={ad.id}/>
+                            <Address adID={ad.id} adAddress={ad.address}/>
                             <Box>
                                 <Heading size='s' textTransform='uppercase'>
                                     Mutations DVF

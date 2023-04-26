@@ -1,8 +1,7 @@
 import {useEffect, useState} from "react";
 import {Ad} from "./models";
 import {
-    Card, CardBody, CardFooter,
-    Divider, Image,
+    Card, CardBody, CardFooter, Image,
     Link, Skeleton,
     Stack, Table, TableCaption, TableContainer, Tag, Tbody,
     Td, Tr,

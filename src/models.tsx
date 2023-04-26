@@ -7,11 +7,12 @@ export type Ad = {
     price: number
     price_sqm: number
     description: string
-    floor: number
     geojson: GeoJSON
     dvf: DVF
     active: boolean
     raw: RawAd
+    floor: number
+    address: string
 }
 
 export type GeoJSON = {

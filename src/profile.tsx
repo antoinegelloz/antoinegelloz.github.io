@@ -8,7 +8,8 @@ import {
     InputLeftAddon, InputRightAddon, Stack, Tag, Text
 } from "@chakra-ui/react";
 import {Config} from "./models";
-import {get, HttpResponse} from "./address";
+
+import {get, HttpResponse} from "./http";
 
 
 const useConfigAsync = () => {
