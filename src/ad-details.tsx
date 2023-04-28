@@ -114,16 +114,9 @@ function AdDetails() {
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                     {formatMoney(ad.price_sqm)}/m²
                                 </Tag>
-                                {ad.floor > 0 ?
-                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        {ad.floor}ème étage
-                                    </Tag> : <></>
-                                }
-                                {ad.floor == 0 ?
-                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        Rez-de-chaussée
-                                    </Tag> : <></>
-                                }
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                    {ad.floor}
+                                </Tag>
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                     Ajoutée {dayjs(ad.inserted_at).locale('fr').fromNow()}
                                 </Tag>

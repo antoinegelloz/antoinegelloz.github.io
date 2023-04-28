@@ -11,7 +11,7 @@ export type Ad = {
     dvf: DVF
     active: boolean
     raw: RawAd
-    floor: number
+    floor: string
     address: string
 }
 

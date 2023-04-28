@@ -120,14 +120,7 @@ function AdsList(props: { userId: string | undefined }) {
                                 )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
                             <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{formatMoney(ad.price)}</Tag>
-                            {ad.floor > 0 ?
-                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{ad.floor}ème étage</Tag> :
-                                <></>
-                            }
-                            {ad.floor == 0 ?
-                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>Rez-de-chaussée</Tag> :
-                                <></>
-                            }
+                            <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{ad.floor}</Tag>
                             <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                 {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
                             </Tag>
