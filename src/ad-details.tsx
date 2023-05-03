@@ -61,10 +61,11 @@ function AdDetails() {
                 </Button>
                 <Card mb='10px'>
                     <CardHeader>
-                        <Link href={ad.raw.url} isExternal={true}
-                              variant='custom'>
-                            <Heading>{ad.raw.title}</Heading>
-                        </Link>
+                        {ad.raw ?
+                            <Link href={ad.raw.url} isExternal={true}
+                                  variant='custom'>
+                                <Heading>{ad.raw.title}</Heading>
+                            </Link> : <Heading>Annonce manuelle</Heading>}
                     </CardHeader>
                     <CardBody>
                         <Stack divider={<StackDivider/>} spacing='4'>
@@ -135,7 +136,7 @@ function AdDetails() {
                                 </Tag>
                             </Box>
                             <Stack direction='row' overflowX='auto'>
-                                {ad.raw.images_url && ad.raw.images_url.length > 0 ? ad.raw.images_url.map((imageURL) => (
+                                {ad.raw && ad.raw.images_url && ad.raw.images_url.length > 0 ? ad.raw.images_url.map((imageURL) => (
                                     <Image boxSize='350px' objectFit='contain' key={imageURL} src={imageURL}
                                            fallback={<Skeleton height="350px" width="350px"/>}></Image>
                                 )) : <Skeleton height="350px" width="350px"/>}
