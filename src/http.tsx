@@ -35,3 +35,14 @@ export async function putJSON<T>(path: string, body: any,
                                  }): Promise<HttpResponse<T>> {
     return await http<T>(new Request(path, args));
 }
+
+export async function postJSON<T>(path: string, body: any,
+                                  args: RequestInit = {
+                                      method: "post",
+                                      body: JSON.stringify(body),
+                                      headers: {
+                                          "Content-Type": "application/json"
+                                      }
+                                  }): Promise<HttpResponse<T>> {
+    return await http<T>(new Request(path, args));
+}

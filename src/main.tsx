@@ -8,6 +8,7 @@ import {createBrowserRouter, RouterProvider, useRouteError} from "react-router-d
 import Root from './root'
 import AdDetails, {loader as adLoader} from "./ad-details";
 import {extendTheme} from "@chakra-ui/react"
+import New from "./new";
 
 const theme = extendTheme({
     components: {
@@ -48,6 +49,11 @@ const router = createBrowserRouter([
         path: "ads/:adId",
         loader: adLoader,
         element: <AdDetails/>,
+        errorElement: <ErrorBoundary/>,
+    },
+    {
+        path: "ads/new",
+        element: <New/>,
         errorElement: <ErrorBoundary/>,
     },
 ]);

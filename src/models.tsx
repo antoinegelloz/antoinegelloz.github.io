@@ -1,18 +1,27 @@
 export type Ad = {
     id: number
-    unique_id: number
     inserted_at: string
     updated_at: string
-    area: number
-    price: number
-    price_sqm: number
+    unique_id: string
     description: string
+    price: number
+    area: number
+    rooms: number
+    property_type: string
+    floor: number | null
+    website: string
+
+    postal_code: string
+
+    price_sqm: number
     geojson: GeoJSON
     dvf: DVF
     active: boolean
+
+    guessed_floor: string
+    guessed_address: string
+
     raw: RawAd
-    floor: string
-    address: string
 }
 
 export type GeoJSON = {

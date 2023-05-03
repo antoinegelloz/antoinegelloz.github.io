@@ -50,7 +50,7 @@ function AdDetails() {
     let ad: Ad = adArray[0]
     console.log(ad, typeof ad)
 
-    const sentences = ad.raw.description.split(/\n|\. /)
+    const sentences = ad.description.split(/\n|\. /)
 
     dayjs.extend(relativeTime)
     return (
@@ -91,32 +91,37 @@ function AdDetails() {
                                         </Link>
                                     </Tag> : <></>
                                 }
-                                {ad.address != "" ?
+                                {ad.guessed_address != "" ?
                                     <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        Suggestion: {ad.address}
+                                        Suggestion: {ad.guessed_address}
                                     </Tag> : <></>
                                 }
                                 <Address adID={ad.id}/>
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                    {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
+                                    {ad.rooms > 1 ? ad.rooms + " pièces de " + ad.area + "m²" : ad.rooms + " pièce de " + ad.area + "m²"}
                                 </Tag>
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                     {formatMoney(ad.price)}
                                 </Tag>
-                                {ad.raw.rooms > 1 ?
+                                {ad.rooms > 1 ?
                                     <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        {ad.raw.rooms} pièces de {ad.area}m²
+                                        {ad.rooms} pièces de {ad.area}m²
                                     </Tag> :
                                     <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        {ad.raw.rooms} pièce de {ad.area}m²
+                                        {ad.rooms} pièce de {ad.area}m²
                                     </Tag>
                                 }
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                     {formatMoney(ad.price_sqm)}/m²
                                 </Tag>
-                                {ad.floor != "" ?
+                                {ad.floor ?
                                     <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        {ad.floor}
+                                        Étage de l'annonce : {ad.floor}
+                                    </Tag> : <></>
+                                }
+                                {ad.guessed_floor != "" ?
+                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
+                                        Étage probable : {ad.guessed_floor}
                                     </Tag> : <></>
                                 }
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>

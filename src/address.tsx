@@ -5,7 +5,6 @@ import {
     AlertIcon,
     AlertTitle,
     Button,
-    Heading,
     Input,
     InputGroup,
     InputRightElement,

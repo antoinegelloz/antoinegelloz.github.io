@@ -120,15 +120,18 @@ function AdsList(props: { userId: string | undefined }) {
                                 )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
                             <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{formatMoney(ad.price)}</Tag>
-                            {ad.floor != "" ?
+                            {ad.floor ?
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{ad.floor}</Tag> : <></>
                             }
                             <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                {ad.raw.rooms > 1 ? ad.raw.rooms + " pièces de " + ad.area + "m²" : ad.raw.rooms + " pièce de " + ad.area + "m²"}
+                                {ad.rooms > 1 ? ad.rooms + " pièces de " + ad.area + "m²" : ad.rooms + " pièce de " + ad.area + "m²"}
                             </Tag>
                             {ad.geojson && ad.geojson.features && ad.geojson.features.length > 0 ?
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}
                                      textAlign={'center'}>{ad.geojson.features[0].properties.label}</Tag> : <></>
+                            }
+                            {ad.website != "" ?
+                                <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>{ad.website}</Tag> : <></>
                             }
                         </CardBody>
                         <CardFooter>
