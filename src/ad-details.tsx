@@ -104,14 +104,6 @@ function AdDetails() {
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                     {formatMoney(ad.price)}
                                 </Tag>
-                                {ad.rooms > 1 ?
-                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        {ad.rooms} pièces de {ad.area}m²
-                                    </Tag> :
-                                    <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
-                                        {ad.rooms} pièce de {ad.area}m²
-                                    </Tag>
-                                }
                                 <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                     {formatMoney(ad.price_sqm)}/m²
                                 </Tag>
@@ -141,23 +133,21 @@ function AdDetails() {
                                            fallback={<Skeleton height="350px" width="350px"/>}></Image>
                                 )) : <Skeleton height="350px" width="350px"/>}
                             </Stack>
-                            <Box>
-                                <Heading size='md' textTransform='uppercase' mb={'10px'}>
-                                    DVF
-                                </Heading>
-                                {ad.dvf.appt_price_sqm > 0 ?
+                            {ad.dvf.appt_price_sqm > 0 ?
+                                <Box>
+                                    <Heading size='md' textTransform='uppercase' mb={'10px'}>
+                                        DVF
+                                    </Heading>
                                     <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                         Moyenne : {formatMoney(ad.dvf.appt_price_sqm)}/m² ({ad.dvf.appt_qty} ventes)
-                                    </Tag> : <></>
-                                }
-                                {ad.dvf.appt_price_sqm > 0 ?
+                                    </Tag>
                                     <Tag fontSize={'18px'} pt={'5px'} pb={'5px'} m={'2px'}>
                                         Différence
                                         : {formatDiff((ad.price_sqm - ad.dvf.appt_price_sqm) / ad.dvf.appt_price_sqm * 100)}%
                                         ({formatMoneyDiff(ad.price_sqm - ad.dvf.appt_price_sqm)}/m²)
-                                    </Tag> : <></>
-                                }
-                            </Box>
+                                    </Tag>
+                                </Box> : <></>
+                            }
                         </Stack>
                     </CardBody>
                 </Card>
