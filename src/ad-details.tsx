@@ -11,11 +11,9 @@ import {
     Code,
     Heading,
     Image,
-    ListItem,
     SimpleGrid, Skeleton,
     Stack, StackDivider, Tag,
-    Text,
-    UnorderedList
+    Text
 } from "@chakra-ui/react";
 import {useLoaderData} from "react-router-dom";
 import {supabaseClient} from "./root";
